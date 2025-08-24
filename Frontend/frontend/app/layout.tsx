@@ -32,7 +32,6 @@ export default function RootLayout({
       >
         {children}
         <Cookies />
-        {/* <ScrollToTop /> */}
         <Toaster position="top-right" />
       </body>
     </html>

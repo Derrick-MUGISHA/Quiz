@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 import DemoBackgroundPaths from "@/components/Background";
 import QuizCards from "@/components/QuizCards";
 
-
-
 export default function QuizListPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
