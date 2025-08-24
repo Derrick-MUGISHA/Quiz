@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
+
+const API_BASE_URL = "http://localhost:5000/api";
 
 interface QuizResult {
   quizId: string;
@@ -15,6 +18,7 @@ interface QuizResult {
   totalQuestions: number;
   completedAt: string;
   wasRandomized?: boolean;
+  attemptId: string;
 }
 
 export default function QuizResultsPage() {
@@ -23,10 +27,28 @@ export default function QuizResultsPage() {
   const quizId = params.id as string;
 
   const [result, setResult] = useState<QuizResult | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedResult = localStorage.getItem(`quiz-result-${quizId}`);
-    if (savedResult) setResult(JSON.parse(savedResult));
+    const fetchResult = async () => {
+      const attemptId = new URLSearchParams(window.location.search).get("attempt");
+      if (!attemptId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data } = await axios.get(`${API_BASE_URL}/quizzes/${quizId}/results/${attemptId}`);
+        setResult(data);
+      } catch (err) {
+        console.error("Error fetching result:", err);
+        setResult(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResult();
   }, [quizId]);
 
   const getScoreColor = (score: number) => {
@@ -48,28 +70,23 @@ export default function QuizResultsPage() {
   };
 
   const handleRetakeQuiz = () => {
-    localStorage.removeItem(`quiz-result-${quizId}`);
     router.push(`/quiz/${quizId}`);
   };
 
   const handleShareResults = async () => {
     if (!result) return;
     const shareText = `I scored ${result.score}% on "${result.quizTitle}"! ${result.correctAnswers}/${result.totalQuestions} correct.${result.wasRandomized ? " (Randomized questions)" : ""}`;
-    const quizUrl = `${window.location.origin}/quiz/${result.quizId}`;
+    const resultUrl = `${window.location.origin}/quiz/${result.quizId}/results?attempt=${result.attemptId}`;
 
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: `Quiz Results: ${result.quizTitle}`,
-          text: shareText,
-          url: quizUrl,
-        });
+        await navigator.share({ title: `Quiz Results: ${result.quizTitle}`, text: shareText, url: resultUrl });
       } catch {
-        await navigator.clipboard.writeText(`${shareText}\n\nTry the quiz yourself: ${quizUrl}`);
+        await navigator.clipboard.writeText(`${shareText}\n\nSee my results: ${resultUrl}`);
         alert("Results copied to clipboard!");
       }
     } else {
-      await navigator.clipboard.writeText(`${shareText}\n\nTry the quiz yourself: ${quizUrl}`);
+      await navigator.clipboard.writeText(`${shareText}\n\nSee my results: ${resultUrl}`);
       alert("Results copied to clipboard!");
     }
   };
@@ -81,9 +98,16 @@ export default function QuizResultsPage() {
     alert("Quiz link copied to clipboard!");
   };
 
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
   if (!result)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 p-6">
+      <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">No results found</h2>
           <p className="text-muted-foreground mb-4">Complete a quiz to see your results here.</p>
@@ -95,8 +119,8 @@ export default function QuizResultsPage() {
   const scoreBadge = getScoreBadge(result.score);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 p-6">
-      <main className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <main className="max-w-3xl mx-auto mt-14">
         <Card className="text-center shadow-lg">
           <CardHeader className="pb-4">
             <div className="flex justify-center mb-4">
@@ -107,14 +131,13 @@ export default function QuizResultsPage() {
             <CardTitle className="text-3xl mb-2 font-bold">Quiz Complete!</CardTitle>
             <p className="text-lg text-muted-foreground">{result.quizTitle}</p>
             {result.wasRandomized && (
-              <Badge variant="outline" className="mt-2">
+              <Badge variant="outline" className="mt-2 bg-green-200">
                 Questions were randomized
               </Badge>
             )}
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Score */}
             <div className="space-y-4">
               <div>
                 <div className={`text-6xl font-extrabold ${getScoreColor(result.score)}`}>{result.score}%</div>
@@ -123,7 +146,6 @@ export default function QuizResultsPage() {
                 </Badge>
               </div>
 
-              {/* Correct / Incorrect */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-green-100 dark:bg-green-900 rounded-lg p-4">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">{result.correctAnswers}</div>
@@ -137,13 +159,11 @@ export default function QuizResultsPage() {
                 </div>
               </div>
 
-              {/* Completion Info */}
               <div className="text-sm text-muted-foreground">
                 Completed on {new Date(result.completedAt).toLocaleDateString()} at{" "}
                 {new Date(result.completedAt).toLocaleTimeString()}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
                 <Button onClick={handleRetakeQuiz} variant="outline" className="gap-2">
                   <RotateCcw className="h-4 w-4" /> Retake Quiz
@@ -162,10 +182,9 @@ export default function QuizResultsPage() {
                 </Button>
               </div>
             </div>
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
       </main>
-      </div>
-    
+    </div>
   );
 }

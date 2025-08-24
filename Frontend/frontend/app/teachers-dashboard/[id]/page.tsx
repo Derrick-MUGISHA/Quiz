@@ -1,18 +1,29 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Eye, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Question {
   _id: string;
   title: string;
   description: string;
   status: "draft" | "published" | "archived";
-  shareLink: string;
-  dueDate?: string;
-  dueTime?: string;
+  category: string;
+  rank: "beginner" | "intermediate" | "professional";
+  createdAt: string;
+  quizId: string;
 }
 
 interface Quiz {
@@ -21,205 +32,203 @@ interface Quiz {
   questions: Question[];
 }
 
+type SortKey = "title" | "status" | "rank" | "category" | "createdAt";
+type SortOrder = "asc" | "desc";
+
 export default function TeacherDashboardPage() {
-  const params = useParams();
-  const teacherId = params?.id as string;
-
-  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
-  const [publishingIds, setPublishingIds] = useState<string[]>([]);
+  const [updatingIds, setUpdatingIds] = useState<string[]>([]);
+  const [sortKey, setSortKey] = useState<SortKey>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  // Check teacher token from cookie
-  useEffect(() => {
-    const cookieToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("teacherToken="))
-      ?.split("=")[1];
+  // Filters
+  const [filterTitle] = useState("");
+  const [filterCategory] = useState("");
+  const [filterRank] = useState("");
+  const [filterStartDate] = useState("");
+  const [filterEndDate] = useState("");
 
-    if (cookieToken && cookieToken === teacherId) {
-      setToken(cookieToken);
-    } else {
-      setToken(null);
-    }
-  }, [teacherId]);
-
-  // Fetch all quizzes
-  const fetchQuizzes = React.useCallback(async () => {
-    if (!token) return;
+  const fetchQuizzes = async () => {
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:5000/api/quizzes");
       setQuizzes(res.data);
+      const allQuestions = res.data.flatMap((quiz: Quiz) =>
+        quiz.questions.map((q) => ({ ...q, quizId: quiz._id }))
+      );
+      setQuestions(allQuestions);
     } catch (err) {
-      console.error("Failed to fetch quizzes:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  };
 
   useEffect(() => {
     fetchQuizzes();
-  }, [token, fetchQuizzes]);
+  }, []);
 
-  // Publish a single question
-  const publishQuestion = async (quizId: string, questionId: string) => {
-    if (!token) return;
-    setPublishingIds((prev) => [...prev, questionId]);
+  const toggleQuestionStatus = async (
+    quizId: string,
+    questionId: string,
+    currentStatus: "draft" | "published" | "archived"
+  ) => {
+    setUpdatingIds((prev) => [...prev, questionId]);
     try {
+      const newStatus = currentStatus === "published" ? "draft" : "published";
       const res = await axios.patch(
-        `http://localhost:5000/api/${quizId}/questions/${questionId}/status`,
-        { status: "published" }
+        `http://localhost:5000/api/quizzes/${quizId}/questions/${questionId}/status`,
+        { status: newStatus }
       );
-
       const updatedQuestion = res.data.question;
-
-      setQuizzes((prev) =>
-        prev.map((quiz) =>
-          quiz._id === quizId
-            ? {
-                ...quiz,
-                questions: quiz.questions.map((q) =>
-                  q._id === questionId ? updatedQuestion : q
-                ),
-              }
-            : quiz
-        )
+      setQuestions((prev) =>
+        prev.map((q) => (q._id === questionId ? updatedQuestion : q))
       );
     } catch (err) {
-      console.error("Failed to publish question:", err);
+      console.error(err);
     } finally {
-      setPublishingIds((prev) => prev.filter((id) => id !== questionId));
+      setUpdatingIds((prev) => prev.filter((id) => id !== questionId));
     }
   };
 
-  // Publish all questions for a quiz
-  const publishAllQuestions = async (quizId: string) => {
-    const quiz = quizzes.find((q) => q._id === quizId);
-    if (!quiz) return;
-
-    const unpublished = quiz.questions.filter((q) => q.status !== "published");
-
-    // Batch publish sequentially (can be changed to Promise.all if needed)
-    for (const q of unpublished) {
-      await publishQuestion(quizId, q._id);
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    else {
+      setSortKey(key);
+      setSortOrder("asc");
     }
   };
 
-  if (!token) {
-    return <h1 className="text-red-600 text-xl">Unauthorized Access 🚫</h1>;
-  }
+  const filteredQuestions = questions
+    .filter((q) => {
+      const matchesTitle = q.title
+        ?.toLowerCase()
+        .includes(filterTitle.toLowerCase());
+      const matchesCategory = filterCategory
+        ? q.category?.toLowerCase() === filterCategory.toLowerCase()
+        : true;
+      const matchesRank = filterRank
+        ? q.rank?.toLowerCase() === filterRank.toLowerCase()
+        : true;
+      let matchesDate = true;
+      if (filterStartDate)
+        matchesDate = new Date(q.createdAt) >= new Date(filterStartDate);
+      if (filterEndDate)
+        matchesDate =
+          matchesDate && new Date(q.createdAt) <= new Date(filterEndDate);
+      return matchesTitle && matchesCategory && matchesRank && matchesDate;
+    })
+    .sort((a, b) => {
+      let valA: string | number = a[sortKey] ?? "";
+      let valB: string | number = b[sortKey] ?? "";
+      if (sortKey === "createdAt") {
+        valA = new Date(a.createdAt).getTime();
+        valB = new Date(b.createdAt).getTime();
+      }
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+  
+
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center">Teacher Dashboard</h1>
-      <p className="text-gray-700 text-center">Your token: {token}</p>
+    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ">
 
-      {loading && <p className="text-gray-500 mt-4 text-center">Loading quizzes...</p>}
-
-      <div className="grid gap-8">
-        {quizzes.map((quiz) => {
-          const publishedQuestions = quiz.questions.filter(
-            (q) => q.status === "published"
-          );
-          const unpublishedQuestions = quiz.questions.filter(
-            (q) => q.status !== "published"
-          );
-
-          return (
-            <div key={quiz._id} className="bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-2xl font-bold mb-4">{quiz.title}</h2>
-
-              {/* Unpublished Questions */}
-              {unpublishedQuestions.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-yellow-600 mb-2">
-                    Unpublished Questions
-                  </h3>
-
-                  <div className="grid gap-4">
-                    {unpublishedQuestions.map((q) => (
-                      <div
-                        key={q._id}
-                        className="p-4 border border-yellow-300 rounded-lg flex justify-between items-start bg-yellow-50"
-                      >
-                        <div className="flex-1">
-                          <h4 className="font-medium text-lg">{q.title}</h4>
-                          <p className="text-gray-700 mt-1">{q.description}</p>
-                          {q.dueDate && (
-                            <p className="text-sm mt-1 text-gray-500">
-                              Due: {q.dueDate} {q.dueTime}
-                            </p>
-                          )}
-                          <a
-                            href={q.shareLink}
-                            target="_blank"
-                            className="text-blue-600 text-sm mt-1 block"
-                          >
-                            Share Link
-                          </a>
-                        </div>
-                        <Button
-                          onClick={() => publishQuestion(quiz._id, q._id)}
-                          disabled={publishingIds.includes(q._id)}
-                        >
-                          {publishingIds.includes(q._id) ? "Publishing..." : "Publish"}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Publish All button */}
-                  {unpublishedQuestions.length > 1 && (
-                    <Button
-                      className="mt-4"
-                      onClick={() => publishAllQuestions(quiz._id)}
-                    >
-                      Publish All
-                    </Button>
-                  )}
-                </div>
-              )}
-
-              {/* Published Questions */}
-              {publishedQuestions.length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-green-600 mb-2">
-                    Published Questions
-                  </h3>
-                  <div className="grid gap-4">
-                    {publishedQuestions.map((q) => (
-                      <div
-                        key={q._id}
-                        className="p-4 border border-green-300 rounded-lg bg-green-50"
-                      >
-                        <h4 className="font-medium text-lg">{q.title}</h4>
-                        <p className="text-gray-700 mt-1">{q.description}</p>
-                        {q.dueDate && (
-                          <p className="text-sm mt-1 text-gray-500">
-                            Due: {q.dueDate} {q.dueTime}
-                          </p>
-                        )}
-                        <a
-                          href={q.shareLink}
-                          target="_blank"
-                          className="text-blue-600 text-sm mt-1 block"
-                        >
-                          Share Link
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {quiz.questions.length === 0 && (
-                <p className="text-gray-500 mt-2">No questions yet.</p>
-              )}
-            </div>
-          );
-        })}
+      <div className="flex justify-between items-center mt-12">
+        <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
+        <Button
+          onClick={() => router.push("/teachersForm")}
+          className="flex items-center gap-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
+        >
+          <Plus /> New Question
+        </Button>
       </div>
+
+      {/* Table */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead onClick={() => handleSort("title")}>
+                Title 
+              </TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead onClick={() => handleSort("status")}>
+                Status 
+              </TableHead>
+              <TableHead onClick={() => handleSort("category")}>
+                Category 
+              </TableHead>
+              <TableHead onClick={() => handleSort("rank")}>
+                Rank
+              </TableHead>
+              <TableHead onClick={() => handleSort("createdAt")}>
+                Created At
+              </TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredQuestions.map((q) => (
+              <TableRow key={q._id}>
+                <TableCell>{q.title}</TableCell>
+                <TableCell className="max-w-sm truncate">
+                  {q.description}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    className={
+                      q.status === "published"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }
+                  >
+                    {q.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{q.category}</TableCell>
+                <TableCell className="capitalize">{q.rank}</TableCell>
+                <TableCell>{new Date(q.createdAt).toLocaleString()}</TableCell>
+                <TableCell className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => alert(`Review: ${q.title}`)}
+                    className= "cursor-pointer"
+                  >
+                    <Eye className="h-4 w-4" /> Review
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      toggleQuestionStatus(q.quizId, q._id, q.status)
+                    }
+                    disabled={updatingIds.includes(q._id)}
+                    className={
+                      q.status === "published"
+                        ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                        : "bg-green-500 hover:bg-green-600 text-white "
+                    }
+                  >
+                    {updatingIds.includes(q._id)
+                      ? "Updating..."
+                      : q.status === "published"
+                      ? "Unpublish"
+                      : "Publish"}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
