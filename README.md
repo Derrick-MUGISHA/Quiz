@@ -1,130 +1,147 @@
-Got it! You want to create a combined **README** for both your frontend and backend projects simultaneously. I can draft a structured, professional README that clearly separates frontend and backend sections while giving a cohesive overview. Here's a strong template you can use and customize:
+# 📚 Quiz Builder Platform
+
+A **full-stack quiz builder platform** that allows teachers to create quizzes and students to take them in real-time. The project is split into two parts:
+
+* 🎨 **Frontend**: Built with **Next.js 15, TypeScript, TailwindCSS, shadcn/ui**, and **Axios**.
+* ⚙️ **Backend**: Built with **Node.js, Express, MongoDB (Mongoose)**, with authentication(cookies), quiz management, and result tracking.
 
 ---
 
-# Project Name
+## 🚀 Features
 
-> Full-stack application with frontend built in **Next.js/React** and backend built in **Node.js/Express**.
+### Teachers
 
-## Table of Contents
+* Create, Publish, and Review.
+* Add multiple-choice questions with hints and time limits.
+* Track student performance.
 
-* [Project Overview](#project-overview)
-* [Features](#features)
-* [Technologies Used](#technologies-used)
-* [Folder Structure](#folder-structure)
-* [Installation](#installation)
+### 🎯 Students
 
-  * [Frontend](#frontend)
-  * [Backend](#backend)
-* [Usage](#usage)
-* [API Endpoints](#api-endpoints)
-* [Contributing](#contributing)
-* [License](#license)
+* Take quizzes in real-time with countdown timers.
+* Select answers using modern UI (radio buttons, checkers).
+* View results instantly after submission.
 
----
+### 🔒 Security
 
-## Project Overview
-
-This project is a full-stack application that provides \[brief description of functionality]. The frontend is responsible for \[UI, user interaction, etc.], while the backend handles \[API, database, authentication, etc.].
+* Authentication & Authorization(cooke management).
+* Environment variables for sensitive data.
 
 ---
 
-## Features
+## 🛠️ Tech Stack
 
-* User authentication and authorization
-* CRUD operations on \[resource]
-* Real-time updates (if applicable)
-* Responsive design for desktop and mobile
-* \[Any other major features]
+### Frontend (`/frontend`)
 
----
+* [Next.js 15](https://nextjs.org/) – App Router
+* [TypeScript](https://www.typescriptlang.org/)
+* [TailwindCSS](https://tailwindcss.com/)
+* [shadcn/ui](https://ui.shadcn.com/) – modern UI components
+* [Axios](https://axios-http.com/) – API communication
 
-## Technologies Used
+### Backend (`/backend`)
 
-### Frontend
-
-* **Next.js 15** (React)
-* **Tailwind CSS** for styling
-* **Framer Motion** for animations
-* **Axios / TanStack Query** for API calls
-
-### Backend
-
-* **Node.js & Express.js**
-* **MongoDB / Firebase** for database
-* **JWT / OAuth** for authentication
-* **CORS** for security
+* [Node.js](https://nodejs.org/) + [Express.js](https://expressjs.com/)
+* [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/)
+* [CORS](https://expressjs.com/en/resources/middleware/cors.html)
+* REST API with authentication and quiz management
 
 ---
 
-## Folder Structure
+## 📂 Project Structure
 
 ```
-root/
-├── frontend/
-│   ├── pages/
-│   ├── components/
-│   ├── public/
-│   └── package.json
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   └── package.json
-└── README.md
+quiz-builder/
+│── backend/                # Backend (Node.js + Express + MongoDB)
+│   ├── controllers/        # Quiz & Auth controllers
+│   ├── models/             # Mongoose schemas
+│   ├── routes/             # Express routes
+│   ├── server.js           # App entry point
+│   ├── package.json
+│   └── .env                # Backend environment variables
+│
+│── frontend/               # Frontend (Next.js 15 + TS)
+│   ├── app/                # Next.js App Router pages
+│   ├── components/         # UI components
+│   ├── lib/                # Utility functions
+│   ├── public/             # Static assets
+│   ├── package.json
+│   └── .env                # Frontend environment variables
+│
+└── README.md               # Combined documentation
 ```
 
 ---
 
-## Installation
+## ⚙️ Installation
 
-### Frontend
+### 1️⃣ Clone Repository
 
 ```bash
-cd frontend
-npm install
-npm run dev
+git clone https://github.com/your-username/quiz-builder.git
+cd quiz-builder
 ```
 
-### Backend
+### 2️⃣ Backend Setup
 
 ```bash
 cd backend
 npm install
-npm run start
 ```
 
-**Note:** Ensure the backend server is running before starting the frontend.
+Create a `.env` file in `/backend` with:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+```
+
+Run backend:
+
+```bash
+cd backend/src
+node server.js
+```
 
 ---
 
-## Usage
+### 3️⃣ Frontend Setup
 
-1. Open your browser and go to `http://localhost:3000`
-2. Interact with the application through the UI
-3. API requests are sent to `http://localhost:5000/api`
+```bash
+cd frontend
+pnpm install
+```
+
+Create a `.env` file in `/frontend` with:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+Run frontend:
+
+```bash
+npm run dev
+```
 
 ---
 
-## API Endpoints
+## 📡 API Endpoints (Backend)
 
-**Example:**
+### **Quizzes**
 
-* `GET /api/quizzes` – Get all quizzes
-* `POST /api/quizzes` – Create a new quiz
-* `GET /api/quizzes/:id` – Get a quiz by ID
-* `POST /api/quizzes/:id` – Update a quiz
-
-*(Add more endpoints based on your backend)*
+* `POST /api/quizzes` → Create quiz
+* `GET /api/quizzes` → Get all quizzes
+* `GET /api/quizzes/:id` → Get quiz by ID
+* `POST /api/quizzes/:id/submit` → Submit answers and get results
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "Add feature"`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a pull request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit changes (`git commit -m 'Add my feature'`)
+4. Push to branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
 
 ---
