@@ -15,7 +15,9 @@ export default function QuizPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [originalQuestions, setOriginalQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, number>
+  >({});
   const [timeRemaining, setTimeRemaining] = useState(10 * 60);
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,9 @@ export default function QuizPage() {
         );
 
         // Navigate to results page using backend attemptId
-        router.push(`/quiz/${quiz._id}/results?attempt=${savedResult.attemptId}`);
+        router.push(
+          `/quiz/${quiz._id}/results?attempt=${savedResult.attemptId}`
+        );
       } catch (err) {
         console.error("Error saving results:", err);
       }
@@ -113,22 +117,23 @@ export default function QuizPage() {
 
   const handleNext = () =>
     setCurrentIndex((prev) => Math.min(prev + 1, quiz!.questions.length - 1));
-  const handlePrev = () =>
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
+  const handlePrev = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   if (loading || !quiz)
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
-        <div className="w-16 h-16 border-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />        
-        <p className="text-lg font-medium text-gray-700">Fetching quiz…</p>
-        <p className="text-sm text-gray-500">Please wait while we prepare your questions ✨</p>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+          <div className="w-16 h-16 border-4 border-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-lg font-medium text-gray-700">Fetching quiz…</p>
+          <p className="text-sm text-gray-500">
+            Please wait while we prepare your questions ✨
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   const currentQ = quiz.questions[currentIndex];
 
@@ -138,7 +143,7 @@ export default function QuizPage() {
         <header className="flex justify-between items-center mb-6">
           <Button
             variant="ghost"
-            className="group rounded-full border border-gray-300"
+            className="group rounded-full border bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer text-white"
             onClick={() => router.push("/")}
           >
             <ChevronLeft className="w-6 h-6 mr-2" /> Back
@@ -161,7 +166,8 @@ export default function QuizPage() {
                 Question {currentIndex + 1} of {quiz.questions.length}
               </div>
               <div className="text-black text-xl md:text-2xl font-bold whitespace-pre-wrap mb-4">
-                <span className="text-gray-500">{currentIndex + 1}.</span> {currentQ.title}
+                <span className="text-gray-500">{currentIndex + 1}.</span>{" "}
+                {currentQ.title}
               </div>
             </div>
 
@@ -211,23 +217,39 @@ export default function QuizPage() {
               <Button
                 onClick={handlePrev}
                 disabled={currentIndex === 0}
-                className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"
+                className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4 mr-1" /> Prev
               </Button>
               {currentIndex === quiz.questions.length - 1 ? (
                 <Button
-                  onClick={() => handleSubmit(false)}
-                  disabled={selectedAnswers[currentQ._id] === undefined}
-                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      await handleSubmit(false);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={
+                    selectedAnswers[currentQ._id] === undefined || loading
+                  }
+                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white cursor-pointer shadow-lg hover:scale-105 transition-transform flex items-center justify-center"
                 >
-                  Submit
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></span>
+                      Submitting...
+                    </span>
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               ) : (
                 <Button
                   onClick={handleNext}
                   disabled={selectedAnswers[currentQ._id] === undefined}
-                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"
+                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
                 >
                   Next <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>

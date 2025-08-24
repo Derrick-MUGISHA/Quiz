@@ -100,9 +100,13 @@ export default function QuizResultsPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+        <div className="w-16 h-16 border-4 border-gradient-from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-lg font-medium text-gray-700">Loading Our Results</p>
+        <p className="text-sm text-gray-500">Please wait while we prepare your results ✨</p>
       </div>
+    </div>
     );
 
   if (!result)
