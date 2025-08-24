@@ -17,27 +17,26 @@ export default function QuizCards() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchQuizzes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+const fetchQuizzes = useCallback(async () => {
+  setLoading(true);
+  setError(null);
 
-    try {
-      const { data, error } = await getQuizzes();
+  try {
+    const { data, error } = await getQuizzes();
 
-      if (error || !data) {
-        throw new Error(error?.message || "Failed to fetch quizzes");
-      }
-
-      setQuizzes(data);
-    } catch (err: unknown) {
-      console.error("Error fetching quizzes:", err);
-      setError(
-        (err as Error).message || "Something went wrong while fetching quizzes."
-      );
-    } finally {
-      setLoading(false);
+    if (error || !data) {
+      throw new Error(error?.message || "Failed to fetch quizzes");
     }
-  }, []);
+
+    setQuizzes(data);
+  } catch (err: unknown) {
+    console.error("Error fetching quizzes:", err);
+    setError((err as Error).message || "Something went wrong while fetching quizzes.");
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchQuizzes();
@@ -149,6 +148,7 @@ export default function QuizCards() {
 
   return (
     <main className="container max-w-12xl mx-auto px-12 flex flex-col justify-center">
+      {/* Retry UI if error */}
       {error && !loading && (
         <div className="flex flex-col justify-center items-center text-center py-16">
           <h3 className="text-xl font-bold mb-2">Failed to load quizzes 😢</h3>
@@ -163,7 +163,8 @@ export default function QuizCards() {
           </div>
         </div>
       )}
-      {/* Categories */}
+
+      {/* Categories only show when no error */}
       {!error && (
         <div className="flex flex-wrap justify-center gap-3 mb-6">
           {loading
@@ -189,16 +190,6 @@ export default function QuizCards() {
                       : "hover:bg-blue-50 hover:border-blue-300 cursor-pointer"
                   }`}
                 >
-                  {category !== "All" && (
-                    <Image
-                      src={getCategoryLogo(category)}
-                      alt={`${category} logo`}
-                      width={16}
-                      height={16}
-                      className="w-4 h-4 mr-1"
-                      onError={(e) => (e.currentTarget.style.display = "none")}
-                    />
-                  )}
                   {category}
                 </Button>
               ))}
@@ -292,7 +283,7 @@ export default function QuizCards() {
         </AnimatePresence>
       )}
 
-      {/* {!loading && filteredQuizzes.length === 0 && (
+      {!loading && !error && filteredQuizzes.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-bold mb-2">No quizzes found</h3>
           <p className="text-muted-foreground text-sm">
@@ -301,7 +292,7 @@ export default function QuizCards() {
               : `No quizzes found in the ${selectedCategory} category.`}
           </p>
         </div>
-      )} */}
+      )}
     </main>
   );
 }
