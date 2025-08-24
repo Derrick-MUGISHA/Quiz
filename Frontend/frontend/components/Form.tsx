@@ -8,7 +8,6 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { toast, Toaster } from "sonner";
-// import toast, { Toaster } from "react-hot-toast";
 
 export default function NewQuestionForm() {
   const [newQuestion, setNewQuestion] = useState({
@@ -160,7 +159,7 @@ export default function NewQuestionForm() {
               )}
             </div>
           ))}
-          <Button type="button" onClick={addOption} className="mt-2 ">
+          <Button type="button" onClick={addOption} className="mt-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer">
             <Plus /> Add Option
           </Button>
         </div>
@@ -236,7 +235,7 @@ export default function NewQuestionForm() {
         </div>
 
         <div className="text-center">
-          <Button type="submit">Create Question</Button>
+          <Button type="submit" className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer">Create Question</Button>
         </div>
       </form>
     </div>
