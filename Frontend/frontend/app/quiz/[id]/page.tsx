@@ -5,29 +5,13 @@ import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Question, Quiz } from "@/types/quiz";
 
 const API_BASE_URL = "http://localhost:5000/api";
-
-interface Question {
-  _id: string;
-  title: string;
-  options: string[];
-  correctAnswer: number;
-  hint?: string;
-}
-
-interface Quiz {
-  _id: string;
-  title: string;
-  questions: Question[];
-  duration?: number;
-}
-
 export default function QuizPage() {
   const router = useRouter();
   const params = useParams();
   const quizId = params?.id as string;
-
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [originalQuestions, setOriginalQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -136,11 +120,15 @@ export default function QuizPage() {
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   if (loading || !quiz)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+        <div className="w-16 h-16 border-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />        
+        <p className="text-lg font-medium text-gray-700">Fetching quiz…</p>
+        <p className="text-sm text-gray-500">Please wait while we prepare your questions ✨</p>
       </div>
-    );
+    </div>
+  );
 
   const currentQ = quiz.questions[currentIndex];
 

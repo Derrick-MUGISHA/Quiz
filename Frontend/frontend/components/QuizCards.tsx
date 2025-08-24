@@ -1,69 +1,53 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Share2, CheckCircle, Play } from "lucide-react";
+import { BookOpen, Share2, CheckCircle, Play, RefreshCw } from "lucide-react";
 import Image from "next/image";
-
-interface Question {
-  _id: string;
-  title: string;
-  category: string;
-  teacher: string;
-  description: string;
-  options: string[];
-  correctAnswer: number;
-  hint: string;
-  score: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  shareLink: string;
-}
-
-interface Quiz {
-  _id: string;
-  title: string;
-  questions: Question[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { Quiz } from "@/types/quiz";
+import { getQuizzes } from "@/api/getQuiz";
 
 export default function QuizCards() {
   const router = useRouter();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchQuizzes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await getQuizzes();
+
+      if (error || !data) {
+        throw new Error(error?.message || "Failed to fetch quizzes");
+      }
+
+      setQuizzes(data);
+    } catch (err: unknown) {
+      console.error("Error fetching quizzes:", err);
+      setError(
+        (err as Error).message || "Something went wrong while fetching quizzes."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchQuizzes = async () => {
-      setLoading(true);
-      try {
-        const { data } = await axios.get<Quiz[]>(
-          "http://localhost:5000/api/quizzes"
-        );
-        setQuizzes(data);
-      } catch (err) {
-        console.error("Error fetching quizzes:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchQuizzes();
-  }, []);
+  }, [fetchQuizzes]);
 
   const categories = [
     "All",
     ...Array.from(
       new Set(
-        quizzes.flatMap((quiz) =>
-          quiz.questions?.map((q) => q.category) || []
-        )
+        quizzes.flatMap((quiz) => quiz.questions?.map((q) => q.category) || [])
       )
     ),
   ];
@@ -77,23 +61,34 @@ export default function QuizCards() {
 
   const getCategoryLogo = (category: string) => {
     const logos: { [key: string]: string } = {
-      Programming: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
-      JavaScript: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+      Programming:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+      JavaScript:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
       Java: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
       C: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg",
       Cpp: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
-      Csharp: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
-      Python: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+      Csharp:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
+      Python:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
       PHP: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
       Ruby: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ruby/ruby-original.svg",
-      Swift: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg",
-      TypeScript: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
-      React: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
-      Design: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+      Swift:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg",
+      TypeScript:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+      React:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      Design:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
       HTML: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
       CSS: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
     };
-    return logos[category] || "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/devicon/devicon-original.svg";
+    return (
+      logos[category] ||
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/devicon/devicon-original.svg"
+    );
   };
 
   const shuffleArray = <T,>(arr: T[]): T[] => {
@@ -108,8 +103,9 @@ export default function QuizCards() {
   const handleStartQuiz = async (quiz: Quiz) => {
     setLoading(true);
     try {
-      
-      const publishedQuestions = quiz.questions.filter(q => q.status === "published");
+      const publishedQuestions = quiz.questions.filter(
+        (q) => q.status === "published"
+      );
       const selectedQuestions = shuffleArray(publishedQuestions).slice(0, 20);
 
       const attemptId = `${quiz._id}-${Date.now()}`;
@@ -138,121 +134,165 @@ export default function QuizCards() {
           url: firstQuestion.shareLink,
         });
       } else {
-        await navigator.clipboard.writeText(`${shareText}\n${firstQuestion.shareLink}`);
+        await navigator.clipboard.writeText(
+          `${shareText}\n${firstQuestion.shareLink}`
+        );
         alert("Quiz link copied to clipboard!");
       }
     } catch {
-      await navigator.clipboard.writeText(`${shareText}\n${firstQuestion.shareLink}`);
+      await navigator.clipboard.writeText(
+        `${shareText}\n${firstQuestion.shareLink}`
+      );
       alert("Quiz link copied to clipboard!");
     }
   };
 
   return (
     <main className="container max-w-12xl mx-auto px-12 flex flex-col justify-center">
+      {error && !loading && (
+        <div className="flex flex-col justify-center items-center text-center py-16">
+          <h3 className="text-xl font-bold mb-2">Failed to load quizzes 😢</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <div className="flex justify-center">
+            <Button
+              onClick={fetchQuizzes}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform cursor-pointer"
+            >
+              <RefreshCw className="h-5 w-5" /> Retry
+            </Button>
+          </div>
+        </div>
+      )}
       {/* Categories */}
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
-        {loading
-          ? Array(6).fill(0).map((_, idx) => (
-              <div key={idx} className="w-24 h-10 bg-gray-200 rounded-md animate-pulse" />
-            ))
-          : categories.map(category => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 text-sm font-medium ${
-                  selectedCategory === category
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-                    : "hover:bg-blue-50 hover:border-blue-300 cursor-pointer"
-                }`}
-              >
-                {category !== "All" && (
-                  <Image
-                    src={getCategoryLogo(category)}
-                    alt={`${category} logo`}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4 mr-1"
-                    onError={e => (e.currentTarget.style.display = "none")}
+      {!error && (
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {loading
+            ? Array(6)
+                .fill(0)
+                .map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="w-24 h-10 bg-gray-200 rounded-md animate-pulse"
                   />
-                )}
-                {category}
-              </Button>
-            ))}
-      </div>
+                ))
+            : categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={
+                    selectedCategory === category ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 text-sm font-medium ${
+                    selectedCategory === category
+                      ? "bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-md cursor-pointer"
+                      : "hover:bg-blue-50 hover:border-blue-300 cursor-pointer"
+                  }`}
+                >
+                  {category !== "All" && (
+                    <Image
+                      src={getCategoryLogo(category)}
+                      alt={`${category} logo`}
+                      width={16}
+                      height={16}
+                      className="w-4 h-4 mr-1"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                    />
+                  )}
+                  {category}
+                </Button>
+              ))}
+        </div>
+      )}
 
       {/* Quiz Cards */}
-      <AnimatePresence mode="wait">
-        <motion.div key={selectedCategory} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading
-            ? Array(6).fill(0).map((_, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="h-52 bg-gray-200 rounded-lg animate-pulse"
-                />
-              ))
-            : filteredQuizzes.map((quiz, idx) => {
-                const firstQuestion = quiz.questions[0];
-                return (
-                  <motion.div
-                    key={quiz._id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  >
-                    <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all">
-                      <div className="relative h-40 w-full overflow-hidden rounded-t-xl">
-                        <Image
-                          src={getCategoryLogo(firstQuestion?.category)}
-                          alt={`${firstQuestion?.category} logo`}
-                          fill
-                          className="object-cover brightness-75"
-                        />
-                      </div>
-
-                      <CardHeader className="flex justify-between items-start px-4 pt-3">
-                        <CardTitle className="text-lg font-semibold line-clamp-2">{quiz.title}</CardTitle>
-                        <Button variant="ghost" size="sm" onClick={e => handleShareQuiz(quiz, e)} className="h-10 w-10 p-0 opacity-60 hover:opacity-100">
-                          <Share2 className="h-10 w-20" />
-                        </Button>
-                      </CardHeader>
-
-                      <div className="flex items-center gap-2 justify-between px-4 mt-1">
-                        <div className="flex items-center gap-1 text-green-600 font-medium text-sm">
-                          {firstQuestion?.status === "published" ? "Published" : "Draft"}
-                          <CheckCircle className="h-4 w-4" />
+      {!error && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCategory}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {loading
+              ? Array(6)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="h-52 bg-gray-200 rounded-lg animate-pulse"
+                    />
+                  ))
+              : filteredQuizzes.map((quiz, idx) => {
+                  const firstQuestion = quiz.questions[0];
+                  return (
+                    <motion.div
+                      key={quiz._id}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    >
+                      <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all">
+                        <div className="relative h-40 w-full overflow-hidden rounded-t-xl">
+                          <Image
+                            src={getCategoryLogo(firstQuestion?.category)}
+                            alt={`${firstQuestion?.category} logo`}
+                            fill
+                            className="object-cover brightness-75"
+                          />
                         </div>
-                        <span className="text-xs text-muted-foreground font-medium">
-                          Date: {new Date(quiz.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
 
-                      <CardContent className="flex items-center justify-between px-4 mt-3 mb-3">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <BookOpen className="h-5 w-5 text-blue-600" />
-                          {quiz.questions.length} Questions
+                        <CardHeader className="flex justify-between items-start px-4 pt-3">
+                          <CardTitle className="text-lg font-semibold line-clamp-2">
+                            {quiz.title}
+                          </CardTitle>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => handleShareQuiz(quiz, e)}
+                            className="h-10 w-10 p-0 opacity-60 hover:opacity-100"
+                          >
+                            <Share2 className="h-10 w-20" />
+                          </Button>
+                        </CardHeader>
+
+                        <div className="flex items-center gap-2 justify-between px-4 mt-1">
+                          <div className="flex items-center gap-1 text-green-600 font-medium text-sm">
+                            {firstQuestion?.status === "published"
+                              ? "Published"
+                              : "Draft"}
+                            <CheckCircle className="h-4 w-4" />
+                          </div>
+                          <span className="text-xs text-muted-foreground font-medium">
+                            Date:{" "}
+                            {new Date(quiz.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
-                        <Button
-                          size="lg"
-                          disabled={loading}
-                          onClick={() => handleStartQuiz(quiz)}
-                          className="rounded-full p-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
-                        >
-                          <Play className="h-6 w-6" />
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-        </motion.div>
-      </AnimatePresence>
 
-      {!loading && filteredQuizzes.length === 0 && (
+                        <CardContent className="flex items-center justify-between px-4 mt-3 mb-3">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <BookOpen className="h-5 w-5 text-blue-600" />
+                            {quiz.questions.length} Questions
+                          </div>
+                          <Button
+                            size="lg"
+                            disabled={loading}
+                            onClick={() => handleStartQuiz(quiz)}
+                            className="rounded-full p-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                          >
+                            <Play className="h-6 w-6" />
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {/* {!loading && filteredQuizzes.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-bold mb-2">No quizzes found</h3>
           <p className="text-muted-foreground text-sm">
@@ -261,7 +301,7 @@ export default function QuizCards() {
               : `No quizzes found in the ${selectedCategory} category.`}
           </p>
         </div>
-      )}
+      )} */}
     </main>
   );
 }
