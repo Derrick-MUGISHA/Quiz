@@ -9,7 +9,7 @@ const errorHandler = require("./middleware/errorHandler");
 connectDB();
 
 const app = express();
-const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
+const allowedOrigins = ['https://quiz-five-rho-90.vercel.app'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) {
