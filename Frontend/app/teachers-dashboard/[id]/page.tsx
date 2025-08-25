@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 
 interface Question {
   _id: string;
-  title: string; 
+  title: string;
   description: string;
   status: "draft" | "published" | "archived";
   category: string;
@@ -54,7 +54,9 @@ export default function TeacherDashboardPage() {
   const fetchQuizzes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://quiz-2-sb0l.onrender.com/api/quizzes");
+      const res = await axios.get(
+        "https://quiz-2-sb0l.onrender.com/api/quizzes"
+      );
       setQuizzes(res.data);
       const allQuestions = res.data.flatMap((quiz: Quiz) =>
         quiz.questions.map((q) => ({ ...q, quizId: quiz._id }))
@@ -198,7 +200,7 @@ export default function TeacherDashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => alert(`Review: ${q.title}`)}
+                    onClick={() => router.push(`/review/${q.quizId}/${q._id}`)}
                     className="cursor-pointer"
                   >
                     <Eye className="h-4 w-4" /> Review

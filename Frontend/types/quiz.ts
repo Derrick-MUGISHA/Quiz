@@ -10,10 +10,11 @@ export interface Question {
   hint: string;
   score: number;
   status: string;
+  rank: string;
   createdAt: string;
   updatedAt: string;
   shareLink: string;
-  code?: string 
+  code?: string;
 }
 
 export interface Quiz {

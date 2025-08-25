@@ -7,6 +7,7 @@ const {
   updateQuestionStatus,
 } = require("../controllers/quizController");
 const { submitQuizResult, getQuizResultByAttempt } = require("../controllers/submitQuizResult");
+const { getQuestionByShareLink } = require("../controllers/quizShare");
 
 const router = express.Router();
 
@@ -20,5 +21,8 @@ router.patch("/quizzes/:quizId/questions/:questionId/status", updateQuestionStat
 // Quiz Result routes
 router.post("/quizzes/:id/results", submitQuizResult);
 router.get("/quizzes/:id/results/:attemptId", getQuizResultByAttempt);
+
+// New route for shared question
+router.get("/questions/shared/:shareLink", getQuestionByShareLink);
 
 module.exports = router;
