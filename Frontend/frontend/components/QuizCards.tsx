@@ -61,14 +61,12 @@ export default function QuizCards() {
 
   const getCategoryLogo = (category: string) => {
     const logos: { [key: string]: string } = {
-      Programming:
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
       JavaScript:
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
       Java: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
       C: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg",
       Cpp: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
-      Csharp:
+      ["C#"]:
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
       Python:
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
@@ -78,13 +76,89 @@ export default function QuizCards() {
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg",
       TypeScript:
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+      HTML5:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
+      CSS: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
+      Go: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
+      Kotlin:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg",
+      Rust: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg",
+      Dart: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+      Lua: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lua/lua-original.svg",
+      R: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg",
+      Scala:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scala/scala-original.svg",
+      Haskell:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/haskell/haskell-original.svg",
+      ObjectiveC:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/objectivec/objectivec-original.svg",
+      Elixir:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/elixir/elixir-original.svg",
+      Perl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/perl/perl-original.svg",
+      Shell:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg",
+      PowerShell:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/powershell/powershell-original.svg",
+      Groovy:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/groovy/groovy-original.svg",
+      Solidity:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/solidity/solidity-original.svg",
+      Julia:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/julia/julia-original.svg",
+      VHDL: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vhdl/vhdl-original.svg",
+      Verilog:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/verilog/verilog-original.svg",
+      Assembly:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/assembly/assembly-original.svg",
+      Elm: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/elm/elm-original.svg",
+      Crystal:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/crystal/crystal-original.svg",
+      Vala: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vala/vala-original.svg",
+      Tcl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tcl/tcl-original.svg",
+      Scheme:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scheme/scheme-original.svg",
+      Fsharp:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fsharp/fsharp-original.svg",
+      OCaml:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ocaml/ocaml-original.svg",
+      D: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/d/d-original.svg",
+      Apex: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apex/apex-original.svg",
+      ActionScript:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/actionscript/actionscript-original.svg",
+      ABAP: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/abap/abap-original.svg",
+      Ada: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ada/ada-original.svg",
+      ALGOL:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/algol/algol-original.svg",
+      AWK: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/awk/awk-original.svg",
+      BCPL: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bcpl/bcpl-original.svg",
+      BASH: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg",
+      BC: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bc/bc-original.svg",
+      Clojure:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/clojure/clojure-original.svg",
+      CoffeeScript:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/coffeescript/coffeescript-original.svg",
+
+      SQL: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sql/sql-original.svg",
+      VisualBasic:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualbasic/visualbasic-original.svg",
+      VisualStudio:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-original.svg",
+      WebAssembly:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/webassembly/webassembly-original.svg",
+      Windows:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows/windows-original.svg",
+      WordPress:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg",
+      Yarn: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/yarn/yarn-original.svg",
+      Zsh: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/zsh/zsh-original.svg",
       React:
         "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
-      Design:
-        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
-      HTML: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
-      CSS: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
+      TailwindCSS:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg",
+      Bootstrap:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-plain.svg",
     };
+
     return (
       logos[category] ||
       "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/devicon/devicon-original.svg"
@@ -148,10 +222,13 @@ export default function QuizCards() {
   };
 
   return (
-    <main className="container max-w-12xl mx-auto px-12 flex flex-col justify-center">
+    <main className="container max-w-12xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center">
+      {/* Error Section */}
       {error && !loading && (
         <div className="flex flex-col justify-center items-center text-center py-16">
-          <h3 className="text-xl font-bold mb-2">Failed to load quizzes 😢</h3>
+          <h3 className="text-xl md:text-2xl font-bold mb-2">
+            Failed to load quizzes 😢
+          </h3>
           <p className="text-muted-foreground mb-4">{error}</p>
           <div className="flex justify-center">
             <Button
@@ -163,6 +240,7 @@ export default function QuizCards() {
           </div>
         </div>
       )}
+
       {/* Categories */}
       {!error && (
         <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -183,7 +261,7 @@ export default function QuizCards() {
                   }
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 text-sm font-medium ${
+                  className={`px-4 py-2 text-sm md:text-base font-medium ${
                     selectedCategory === category
                       ? "bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-md cursor-pointer"
                       : "hover:bg-blue-50 hover:border-blue-300 cursor-pointer"
@@ -210,7 +288,7 @@ export default function QuizCards() {
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedCategory}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {loading
               ? Array(6)
@@ -221,7 +299,7 @@ export default function QuizCards() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="h-52 bg-gray-200 rounded-lg animate-pulse"
+                      className="h-52 sm:h-56 md:h-60 lg:h-64 bg-gray-200 rounded-lg animate-pulse"
                     />
                   ))
               : filteredQuizzes.map((quiz, idx) => {
@@ -233,57 +311,61 @@ export default function QuizCards() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                     >
-                      <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all">
-                        <div className="relative h-40 w-full overflow-hidden rounded-t-xl">
+                      <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all flex flex-col">
+                        {/* Top full-width responsive image */}
+                        <div className="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 overflow-hidden rounded-t-xl">
                           <Image
                             src={getCategoryLogo(firstQuestion?.category)}
                             alt={`${firstQuestion?.category} logo`}
                             fill
-                            className="object-cover brightness-75"
+                            className="object-cover w-full h-full brightness-75"
                           />
                         </div>
 
-                        <CardHeader className="flex justify-between items-start px-4 pt-3">
-                          <CardTitle className="text-lg font-semibold line-clamp-2">
-                            {quiz.title}
-                          </CardTitle>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => handleShareQuiz(quiz, e)}
-                            className="h-10 w-10 p-0 opacity-60 hover:opacity-100"
-                          >
-                            <Share2 className="h-10 w-20" />
-                          </Button>
-                        </CardHeader>
+                        {/* Card Content */}
+                        <div className="flex flex-col flex-1">
+                          <CardHeader className="flex justify-between items-start px-4 pt-3">
+                            <CardTitle className="text-lg md:text-xl font-semibold line-clamp-2">
+                              {quiz.title}
+                            </CardTitle>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => handleShareQuiz(quiz, e)}
+                              className="h-10 w-10 p-0 opacity-60 hover:opacity-100"
+                            >
+                              <Share2 className="h-10 w-20" />
+                            </Button>
+                          </CardHeader>
 
-                        <div className="flex items-center gap-2 justify-between px-4 mt-1">
-                          <div className="flex items-center gap-1 text-green-600 font-medium text-sm">
-                            {firstQuestion?.status === "published"
-                              ? "Published"
-                              : "Draft"}
-                            <CheckCircle className="h-4 w-4" />
+                          <div className="flex items-center gap-2 justify-between px-4 mt-1 text-xs md:text-sm">
+                            <div className="flex items-center gap-1 text-green-600 font-medium">
+                              {firstQuestion?.status === "published"
+                                ? "Published"
+                                : "Draft"}
+                              <CheckCircle className="h-4 w-4" />
+                            </div>
+                            <span className="text-muted-foreground font-medium">
+                              Date:{" "}
+                              {new Date(quiz.createdAt).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground font-medium">
-                            Date:{" "}
-                            {new Date(quiz.createdAt).toLocaleDateString()}
-                          </span>
+
+                          <CardContent className="flex items-center justify-between px-4 mt-3 mb-3">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <BookOpen className="h-5 w-5 text-blue-600" />
+                              {quiz.questions.length} Questions
+                            </div>
+                            <Button
+                              size="lg"
+                              disabled={loading}
+                              onClick={() => handleStartQuiz(quiz)}
+                              className="rounded-full p-4 md:p-5 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                            >
+                              <Play className="h-6 w-6 md:h-7 md:w-7" />
+                            </Button>
+                          </CardContent>
                         </div>
-
-                        <CardContent className="flex items-center justify-between px-4 mt-3 mb-3">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <BookOpen className="h-5 w-5 text-blue-600" />
-                            {quiz.questions.length} Questions
-                          </div>
-                          <Button
-                            size="lg"
-                            disabled={loading}
-                            onClick={() => handleStartQuiz(quiz)}
-                            className="rounded-full p-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
-                          >
-                            <Play className="h-6 w-6" />
-                          </Button>
-                        </CardContent>
                       </Card>
                     </motion.div>
                   );
@@ -291,17 +373,6 @@ export default function QuizCards() {
           </motion.div>
         </AnimatePresence>
       )}
-
-      {/* {!loading && filteredQuizzes.length === 0 && (
-        <div className="text-center py-20">
-          <h3 className="text-xl font-bold mb-2">No quizzes found</h3>
-          <p className="text-muted-foreground text-sm">
-            {selectedCategory === "All"
-              ? "No quizzes available yet. Be the first to create one!"
-              : `No quizzes found in the ${selectedCategory} category.`}
-          </p>
-        </div>
-      )} */}
     </main>
   );
 }

@@ -13,6 +13,7 @@ export interface Question {
   createdAt: string;
   updatedAt: string;
   shareLink: string;
+  code?: string 
 }
 
 export interface Quiz {
