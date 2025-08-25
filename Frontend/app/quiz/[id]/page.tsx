@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Question, Quiz } from "@/types/quiz";
 
-const API_BASE_URL = "https://quiz-five-rho-90.vercel.app/api";
+const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
 export default function QuizPage() {
   const router = useRouter();
   const params = useParams();
