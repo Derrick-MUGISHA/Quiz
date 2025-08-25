@@ -2,9 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const connectDB = require("./config/db");
-const quizRoutes = require("./routes/quizRoutes");
-const errorHandler = require("./middleware/errorHandler");
+const connectDB = require("./src/config/db");
+const quizRoutes = require("./src/routes/quizRoutes");
+const errorHandler = require("./src/middleware/errorHandler");
 
 connectDB();
 
