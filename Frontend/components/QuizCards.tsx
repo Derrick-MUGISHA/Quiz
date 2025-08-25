@@ -222,7 +222,7 @@ export default function QuizCards() {
   };
 
   return (
-    <main className="container max-w-12xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center">
+    <main className="container max-w-12xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center mb-8">
       {/* Error Section */}
       {error && !loading && (
         <div className="flex flex-col justify-center items-center text-center py-16">
@@ -291,7 +291,7 @@ export default function QuizCards() {
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {loading
-              ? Array(6)
+              ? Array(8)
                   .fill(0)
                   .map((_, idx) => (
                     <motion.div
