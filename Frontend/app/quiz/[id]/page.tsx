@@ -6,6 +6,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Question, Quiz } from "@/types/quiz";
+import { toast } from "sonner";
 
 const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
 export default function QuizPage() {
@@ -82,11 +83,15 @@ export default function QuizPage() {
           }
         );
 
+        toast.success(`Quiz completed! You scored ${score}%`);
+
         router.push(
           `/quiz/${quiz._id}/results?attempt=${savedResult.attemptId}`
         );
       } catch (err) {
         console.error("Error saving results:", err);
+        toast.error("Failed to save results. Returning to start page...");
+        router.push("/");
       }
     },
     [quiz, originalQuestions, selectedAnswers, router]
@@ -98,12 +103,13 @@ export default function QuizPage() {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          toast.error("Time is up! Submitting your quiz...");
           handleSubmit(true);
-          return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(timer);
   }, [quiz, handleSubmit]);
 
