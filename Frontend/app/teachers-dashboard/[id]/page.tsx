@@ -54,7 +54,7 @@ export default function TeacherDashboardPage() {
   const fetchQuizzes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/quizzes");
+      const res = await axios.get("https://quiz-five-rho-90.vercel.app/api/quizzes");
       setQuizzes(res.data);
       const allQuestions = res.data.flatMap((quiz: Quiz) =>
         quiz.questions.map((q) => ({ ...q, quizId: quiz._id }))
@@ -80,7 +80,7 @@ export default function TeacherDashboardPage() {
     try {
       const newStatus = currentStatus === "published" ? "draft" : "published";
       const res = await axios.patch(
-        `http://localhost:5000/api/quizzes/${quizId}/questions/${questionId}/status`,
+        `https://quiz-five-rho-90.vercel.app/api/quizzes/${quizId}/questions/${questionId}/status`,
         { status: newStatus }
       );
       const updatedQuestion = res.data.question;
