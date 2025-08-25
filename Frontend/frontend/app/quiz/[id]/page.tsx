@@ -139,125 +139,134 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl">
-        <header className="flex justify-between items-center mb-6">
+  <div className="w-full max-w-6xl">
+    <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <Button
+        variant="ghost"
+        className="group rounded-full border bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer text-white"
+        onClick={() => router.push("/")}
+      >
+        <ChevronLeft className="w-6 h-6 mr-2" /> Back
+      </Button>
+      <h1 className="text-3xl md:text-4xl font-bold">{quiz.title}</h1>
+      <div
+        className={`flex items-center gap-2 text-2xl md:text-3xl font-semibold ${
+          timeRemaining < 60 ? "text-red-600" : ""
+        }`}
+      >
+        <Clock className="w-6 h-6" />
+        <span>{formatTime(timeRemaining)}</span>
+      </div>
+    </header>
+
+    <div className="flex flex-col md:flex-row gap-6 border border-amber-200 rounded-lg shadow-lg bg-white p-6 md:p-12 mt-6 md:mt-24">
+      <div className="flex-1">
+        <div className="mb-4 flex flex-col">
+          <div className="text-sm text-gray-500 self-end">
+            Question {currentIndex + 1} of {quiz.questions.length}
+          </div>
+          <div className="text-black text-xl md:text-2xl font-bold whitespace-pre-wrap mb-2">
+            <span className="text-gray-500">{currentIndex + 1}.</span>{" "}
+            {currentQ.title}
+          </div>
+          {currentQ.description && (
+            <p className="text-gray-700 text-base md:text-lg mb-4 whitespace-pre-wrap">
+              {currentQ.description}
+            </p>
+          )}
+          {currentQ.code && (
+            <pre className="bg-gray-100 text-gray-800 p-4 rounded overflow-x-auto mb-4 text-sm md:text-base">
+              <code>{currentQ.code}</code>
+            </pre>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2 mb-4">
+          {currentQ.options.map((opt, idx) => (
+            <label
+              key={idx}
+              className="flex items-center gap-2 p-2 cursor-pointer transition-all duration-200 hover:bg-gray-100 rounded"
+            >
+              <input
+                type="radio"
+                name={`question-${currentQ._id}`}
+                checked={selectedAnswers[currentQ._id] === idx}
+                onChange={() => handleAnswer(idx)}
+                className="w-5 h-5 accent-blue-500"
+              />
+              <span className="text-lg">{opt}</span>
+            </label>
+          ))}
+        </div>
+
+        {currentQ.hint && (
+          <div className="mt-4 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="show-hint"
+              checked={showHint}
+              onChange={() => setShowHint(!showHint)}
+              className="w-5 h-5 accent-yellow-400"
+            />
+            <label
+              htmlFor="show-hint"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Show Hint
+            </label>
+          </div>
+        )}
+
+        {showHint && currentQ.hint && (
+          <p className="mt-2 p-3 bg-yellow-100 rounded text-gray-800">
+            {currentQ.hint}
+          </p>
+        )}
+
+        <div className="flex justify-between mt-6">
           <Button
-            variant="ghost"
-            className="group rounded-full border bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer text-white"
-            onClick={() => router.push("/")}
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
           >
-            <ChevronLeft className="w-6 h-6 mr-2" /> Back
+            <ChevronLeft className="w-4 h-4 mr-1" /> Prev
           </Button>
-          <h1 className="text-4xl font-bold">{quiz.title}</h1>
-          <div
-            className={`flex items-center gap-2 text-3xl font-semibold ${
-              timeRemaining < 60 ? "text-red-600" : ""
-            }`}
-          >
-            <Clock className="w-6 h-6" />
-            <span>{formatTime(timeRemaining)}</span>
-          </div>
-        </header>
-
-        <div className="flex flex-1 gap-6 border border-amber-200 rounded-lg shadow-lg bg-white p-12 mt-24">
-          <div className="flex-1">
-            <div className="mb-4 flex flex-col">
-              <div className="text-sm text-gray-500 self-end">
-                Question {currentIndex + 1} of {quiz.questions.length}
-              </div>
-              <div className="text-black text-xl md:text-2xl font-bold whitespace-pre-wrap mb-4">
-                <span className="text-gray-500">{currentIndex + 1}.</span>{" "}
-                {currentQ.title}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mb-4">
-              {currentQ.options.map((opt, idx) => (
-                <label
-                  key={idx}
-                  className="flex items-center gap-2 p-2 cursor-pointer transition-all duration-200"
-                >
-                  <input
-                    type="radio"
-                    name={`question-${currentQ._id}`}
-                    checked={selectedAnswers[currentQ._id] === idx}
-                    onChange={() => handleAnswer(idx)}
-                    className="w-5 h-5 accent-blue-500"
-                  />
-                  <span className="text-lg">{opt}</span>
-                </label>
-              ))}
-            </div>
-
-            {currentQ.hint && (
-              <div className="mt-4 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="show-hint"
-                  checked={showHint}
-                  onChange={() => setShowHint(!showHint)}
-                  className="w-5 h-5 accent-yellow-400"
-                />
-                <label
-                  htmlFor="show-hint"
-                  className="text-sm font-medium cursor-pointer"
-                >
-                  Show Hint
-                </label>
-              </div>
-            )}
-
-            {showHint && currentQ.hint && (
-              <p className="mt-2 p-3 bg-yellow-100 rounded text-gray-800">
-                {currentQ.hint}
-              </p>
-            )}
-
-            <div className="flex justify-between mt-6">
-              <Button
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" /> Prev
-              </Button>
-              {currentIndex === quiz.questions.length - 1 ? (
-                <Button
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      await handleSubmit(false);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={
-                    selectedAnswers[currentQ._id] === undefined || loading
-                  }
-                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white cursor-pointer shadow-lg hover:scale-105 transition-transform flex items-center justify-center"
-                >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></span>
-                      Submitting...
-                    </span>
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
+          {currentIndex === quiz.questions.length - 1 ? (
+            <Button
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await handleSubmit(false);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={selectedAnswers[currentQ._id] === undefined || loading}
+              className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white cursor-pointer shadow-lg hover:scale-105 transition-transform flex items-center justify-center"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></span>
+                  Submitting...
+                </span>
               ) : (
-                <Button
-                  onClick={handleNext}
-                  disabled={selectedAnswers[currentQ._id] === undefined}
-                  className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
-                >
-                  Next <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
+                "Submit"
               )}
-            </div>
-          </div>
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNext}
+              disabled={selectedAnswers[currentQ._id] === undefined}
+              className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 cursor-pointer"
+            >
+              Next <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          )}
         </div>
       </div>
     </div>
+  </div>
+</div>
+
   );
 }

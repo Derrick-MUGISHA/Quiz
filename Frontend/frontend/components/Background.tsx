@@ -4,6 +4,7 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import Image from "next/image";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -143,24 +144,89 @@ function FloatingPaths({ position }: { position: number }) {
 }
 
 function ScrollingLogos() {
-    const logos = [
-        { name: "React", url: "https://svgl.app/library/react_light.svg", darkUrl: "https://svgl.app/library/react_dark.svg" },
-        { name: "Go", url: "https://svgl.app/library/golang.svg", darkUrl: "https://svgl.app/library/golang_dark.svg" },
-        { name: "Swift", url: "https://svgl.app/library/swift.svg" },
-        { name: "Vue", url: "https://svgl.app/library/vue.svg" },
-        { name: "Python", icon: "🐍" },
-        { name: "JavaScript", icon: "🟨" },
-        { name: "TypeScript", icon: "🔷" },
-        { name: "Java", icon: "☕" },
-        { name: "C++", icon: "⚡" },
-        { name: "Rust", icon: "🦀" },
-        { name: "PHP", icon: "🐘" },
-        { name: "Ruby", icon: "💎" },
-        { name: "C#", icon: "🔷" },
-        { name: "Kotlin", icon: "🎯" },
-        { name: "Dart", icon: "🎯" },
-        { name: "Scala", icon: "🎭" },
-    ];
+const logos = [
+  {
+    name: "React",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+  },
+  {
+    name: "Go",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
+  },
+  {
+    name: "Swift",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg",
+  },
+  {
+    name: "Vue",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg",
+  },
+  {
+    name: "Python",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+  },
+  {
+    name: "JavaScript",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+  },
+  {
+    name: "TypeScript",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+  },
+  {
+    name: "Java",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+  },
+  {
+    name: "C++",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+  },
+  {
+    name: "Rust",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg",
+  },
+  {
+    name: "PHP",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
+  },
+  {
+    name: "Ruby",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ruby/ruby-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ruby/ruby-original.svg",
+  },
+  {
+    name: "C#",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
+  },
+  {
+    name: "Kotlin",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg",
+  },
+  {
+    name: "Dart",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+  },
+  {
+    name: "Scala",
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scala/scala-original.svg",
+    darkUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scala/scala-original.svg",
+  },
+];
+
 
     const duplicatedLogos = [...logos, ...logos, ...logos];
 
@@ -184,15 +250,17 @@ function ScrollingLogos() {
                     >
                         {logo.url ? (
                             <div className="w-8 h-8 flex items-center justify-center">
-                                <img 
+                                <Image 
                                     src={logo.url} 
                                     alt={logo.name}
+                                        width={32}
+                                        height={32}
                                     className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-opacity"
                                 />
                             </div>
                         ) : (
                             <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity">
-                                {logo.icon}
+                                {logo.url}
                             </div>
                         )}
                         <span className="text-xs text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-700 dark:group-hover:text-neutral-200 transition-colors">

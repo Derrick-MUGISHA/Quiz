@@ -133,12 +133,8 @@ export default function TeacherDashboardPage() {
       return 0;
     });
 
-  
-
-
   return (
     <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ">
-
       <div className="flex justify-between items-center mt-12">
         <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
         <Button
@@ -151,24 +147,26 @@ export default function TeacherDashboardPage() {
 
       {/* Table */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+          <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+            <div className="w-16 h-16 border-4 border-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-lg font-medium text-gray-700">Fetching data…</p>
+            <p className="text-sm text-gray-500">
+              Please wait while we prepare your content ✨
+            </p>
+          </div>
+        </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead onClick={() => handleSort("title")}>
-                Title 
-              </TableHead>
+              <TableHead onClick={() => handleSort("title")}>Title</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead onClick={() => handleSort("status")}>
-                Status 
-              </TableHead>
+              <TableHead onClick={() => handleSort("status")}>Status</TableHead>
               <TableHead onClick={() => handleSort("category")}>
-                Category 
+                Category
               </TableHead>
-              <TableHead onClick={() => handleSort("rank")}>
-                Rank
-              </TableHead>
+              <TableHead onClick={() => handleSort("rank")}>Rank</TableHead>
               <TableHead onClick={() => handleSort("createdAt")}>
                 Created At
               </TableHead>
@@ -201,7 +199,7 @@ export default function TeacherDashboardPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => alert(`Review: ${q.title}`)}
-                    className= "cursor-pointer"
+                    className="cursor-pointer"
                   >
                     <Eye className="h-4 w-4" /> Review
                   </Button>

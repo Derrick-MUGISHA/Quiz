@@ -8,12 +8,12 @@ const QuestionSchema = new mongoose.Schema({
     description: { type: String, required: true },
     options: { type: [String], required: true },
     correctAnswer: { type: Number, required: true },
-    hint: { type: String, required: false }, // optional
-    score: { type: Number, required: false, default: 1 }, // optional with default
-    shareLink: { type: String, required: false }, // optional
+    hint: { type: String, required: false },
+    score: { type: Number, required: false, default: 1 },
+    shareLink: { type: String, required: false },
     status: { type: String, enum: ["draft", "published", "archived"], default: "draft" },
     rank: { type: String, enum: ["beginner", "intermediate", "professional"], required: [true, "Rank is required"] },
-    code: { type: String, required: false } // new optional code field
+    code: { type: String, required: false }
 }, { timestamps: true });
 
 QuestionSchema.pre("save", function (next) {
