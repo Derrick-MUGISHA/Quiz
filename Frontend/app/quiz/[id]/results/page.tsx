@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 
-const API_BASE_URL = "https://quiz-five-rho-90.vercel.app/api";
+const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
 
 interface QuizResult {
   quizId: string;
