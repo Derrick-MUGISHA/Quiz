@@ -39,7 +39,9 @@ export default function QuizCards() {
 
       const publishedQuizzes = data.map((quiz: Quiz) => ({
         ...quiz,
-        questions: quiz.questions.filter((q: Question) => q.status === "published"),
+        questions: quiz.questions.filter(
+          (q: Question) => q.status === "published"
+        ),
       }));
 
       const quizzesWithPublished = publishedQuizzes.filter(
@@ -314,7 +316,7 @@ export default function QuizCards() {
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedCategory}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
           >
             {loading
               ? Array(8)
@@ -325,7 +327,7 @@ export default function QuizCards() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="h-52 sm:h-56 md:h-60 lg:h-64 bg-gray-200 rounded-lg animate-pulse"
+                      className="h-52 sm:h-56 md:h-60 lg:h-64 w-full bg-gray-200 rounded-lg animate-pulse"
                     />
                   ))
               : filteredQuizzes.map((quiz, idx) => {
@@ -336,6 +338,7 @@ export default function QuizCards() {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      className="w-full"
                     >
                       <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all flex flex-col">
                         <div className="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 overflow-hidden rounded-t-xl">

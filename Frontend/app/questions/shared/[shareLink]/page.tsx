@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Question {
   _id: string;
@@ -32,7 +32,7 @@ export default function ReviewPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showHint, setShowHint] = useState(true); // always show hints for review
+  const [showHint, setShowHint] = useState(true);
 
   useEffect(() => {
     if (!params.quizId || !params.questionId) return;
