@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Share2, CheckCircle, Play, RefreshCw, Loader2 } from "lucide-react";
+import {
+  BookOpen,
+  Share2,
+  CheckCircle,
+  Play,
+  RefreshCw,
+  Loader2,
+} from "lucide-react";
 import Image from "next/image";
 import { Quiz } from "@/types/quiz";
 import { getQuizzes } from "@/api/getQuiz";
@@ -177,7 +184,10 @@ export default function QuizCards() {
   };
 
   const handleStartQuiz = async (quiz: Quiz) => {
-    setLoading(true);
+    setLoadingQuizId(quiz._id);
+
+    toast(`Starting quiz: ${quiz.title}`);
+    
     try {
       const publishedQuestions = quiz.questions.filter(
         (q) => q.status === "published"
@@ -190,13 +200,14 @@ export default function QuizCards() {
         JSON.stringify({ ...quiz, questions: selectedQuestions })
       );
 
+      
       await router.push(`/quiz/${quiz._id}?attempt=${attemptId}`);
     } finally {
-      setLoading(false);
+      setLoadingQuizId(null);
     }
   };
 
-const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
+  const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
     event.stopPropagation();
     const firstQuestion = quiz.questions[0];
     if (!firstQuestion?.shareLink) return;
@@ -219,9 +230,7 @@ const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
       await navigator.clipboard.writeText(
         `${shareText}\n${firstQuestion.shareLink}`
       );
-      toast(
-         "Quiz link has been copied to clipboard.",
-      );
+      toast("Quiz link has been copied to clipboard.");
     }
   };
 
@@ -316,7 +325,6 @@ const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                     >
                       <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all flex flex-col">
-                        
                         <div className="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 overflow-hidden rounded-t-xl">
                           <Image
                             src={getCategoryLogo(firstQuestion?.category)}
@@ -355,7 +363,7 @@ const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
                             </span>
                           </div>
 
-                          <CardContent className="flex items-center justify-between px-4 mt-3 mb-3">
+                          <CardContent className="flex items-center justify-between px-6 mt-3 mb-3 gap-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <BookOpen className="h-5 w-5 text-blue-600" />
                               {quiz.questions.length} Questions
