@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 
 interface Question {
   _id: string;
-  title: string;
+  title: string; 
   description: string;
   status: "draft" | "published" | "archived";
   category: string;
