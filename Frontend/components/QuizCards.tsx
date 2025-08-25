@@ -222,7 +222,7 @@ export default function QuizCards() {
   };
 
   return (
-    <main className="container max-w-12xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center mb-8">
+    <main className="container max-w-8xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center mb-8">
       {/* Error Section */}
       {error && !loading && (
         <div className="flex flex-col justify-center items-center text-center py-16">
@@ -312,7 +312,7 @@ export default function QuizCards() {
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                     >
                       <Card className="h-full rounded-xl border shadow-md hover:shadow-xl transition-all flex flex-col">
-                        {/* Top full-width responsive image */}
+                        
                         <div className="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 overflow-hidden rounded-t-xl">
                           <Image
                             src={getCategoryLogo(firstQuestion?.category)}
@@ -332,7 +332,7 @@ export default function QuizCards() {
                               variant="ghost"
                               size="sm"
                               onClick={(e) => handleShareQuiz(quiz, e)}
-                              className="h-10 w-10 p-0 opacity-60 hover:opacity-100"
+                              className="h-10 w-10 p-0 opacity-60 hover:opacity-100 cursor-pointer"
                             >
                               <Share2 className="h-10 w-20" />
                             </Button>
