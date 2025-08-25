@@ -48,7 +48,7 @@ export default function NewQuestionForm() {
     }
 
     try {
-      await axios.post("https://quiz-five-rho-90.vercel.app/api/quizzes", newQuestion);
+      await axios.post("https://quiz-2-sb0l.onrender.com/api/quizzes", newQuestion);
       toast.success("Question created successfully!"); 
 
       setNewQuestion({
