@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Share2, CheckCircle, Play, RefreshCw } from "lucide-react";
+import { BookOpen, Share2, CheckCircle, Play, RefreshCw, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { Quiz } from "@/types/quiz";
 import { getQuizzes } from "@/api/getQuiz";
+import { toast } from "sonner";
 
 export default function QuizCards() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function QuizCards() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingQuizId, setLoadingQuizId] = useState<string | null>(null);
 
   const fetchQuizzes = useCallback(async () => {
     setLoading(true);
@@ -194,7 +196,7 @@ export default function QuizCards() {
     }
   };
 
-  const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
+const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
     event.stopPropagation();
     const firstQuestion = quiz.questions[0];
     if (!firstQuestion?.shareLink) return;
@@ -211,13 +213,15 @@ export default function QuizCards() {
         await navigator.clipboard.writeText(
           `${shareText}\n${firstQuestion.shareLink}`
         );
-        alert("Quiz link copied to clipboard!");
+        toast("Quiz link has been copied to clipboard.");
       }
     } catch {
       await navigator.clipboard.writeText(
         `${shareText}\n${firstQuestion.shareLink}`
       );
-      alert("Quiz link copied to clipboard!");
+      toast(
+         "Quiz link has been copied to clipboard.",
+      );
     }
   };
 
@@ -358,11 +362,15 @@ export default function QuizCards() {
                             </div>
                             <Button
                               size="lg"
-                              disabled={loading}
+                              disabled={loadingQuizId === quiz._id}
                               onClick={() => handleStartQuiz(quiz)}
                               className="rounded-full p-4 md:p-5 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
                             >
-                              <Play className="h-6 w-6 md:h-7 md:w-7" />
+                              {loadingQuizId === quiz._id ? (
+                                <Loader2 className="h-6 w-6 animate-spin" />
+                              ) : (
+                                <Play className="h-6 w-6 md:h-7 md:w-7" />
+                              )}
                             </Button>
                           </CardContent>
                         </div>
