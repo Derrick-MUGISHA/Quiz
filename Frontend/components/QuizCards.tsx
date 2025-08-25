@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Image from "next/image";
-import { Quiz } from "@/types/quiz";
+import { Question, Quiz } from "@/types/quiz";
 import { getQuizzes } from "@/api/getQuiz";
 import { toast } from "sonner";
 
@@ -37,7 +37,16 @@ export default function QuizCards() {
         throw new Error(error?.message || "Failed to fetch quizzes");
       }
 
-      setQuizzes(data);
+      const publishedQuizzes = data.map((quiz: Quiz) => ({
+        ...quiz,
+        questions: quiz.questions.filter((q: Question) => q.status === "published"),
+      }));
+
+      const quizzesWithPublished = publishedQuizzes.filter(
+        (quiz: Quiz) => quiz.questions.length > 0
+      );
+
+      setQuizzes(quizzesWithPublished);
     } catch (err: unknown) {
       console.error("Error fetching quizzes:", err);
       setError(
@@ -187,7 +196,7 @@ export default function QuizCards() {
     setLoadingQuizId(quiz._id);
 
     toast(`Starting quiz: ${quiz.title}`);
-    
+
     try {
       const publishedQuestions = quiz.questions.filter(
         (q) => q.status === "published"
@@ -200,36 +209,40 @@ export default function QuizCards() {
         JSON.stringify({ ...quiz, questions: selectedQuestions })
       );
 
-      
       await router.push(`/quiz/${quiz._id}?attempt=${attemptId}`);
     } finally {
       setLoadingQuizId(null);
     }
   };
 
-  const handleShareQuiz = async (quiz: Quiz, event: React.MouseEvent) => {
+  const handleShareQuiz = async (
+    quiz: Quiz,
+    question: Question,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
-    const firstQuestion = quiz.questions[0];
-    if (!firstQuestion?.shareLink) return;
 
-    const shareText = `Check out this quiz: "${quiz.title}" - ${firstQuestion.description}`;
+    const q = question || quiz.questions[0];
+    if (!q?.shareLink) return;
+
+    const shareId = q.shareLink.split("/").pop();
+
+    const shareText = `Check out this quiz question: "${q.title}"`;
+    const url = `${window.location.origin}/questions/shared/${shareId}`;
+
     try {
       if (navigator.share) {
         await navigator.share({
           title: quiz.title,
           text: shareText,
-          url: firstQuestion.shareLink,
+          url,
         });
       } else {
-        await navigator.clipboard.writeText(
-          `${shareText}\n${firstQuestion.shareLink}`
-        );
+        await navigator.clipboard.writeText(`${shareText}\n${url}`);
         toast("Quiz link has been copied to clipboard.");
       }
     } catch {
-      await navigator.clipboard.writeText(
-        `${shareText}\n${firstQuestion.shareLink}`
-      );
+      await navigator.clipboard.writeText(`${shareText}\n${url}`);
       toast("Quiz link has been copied to clipboard.");
     }
   };
@@ -343,7 +356,9 @@ export default function QuizCards() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={(e) => handleShareQuiz(quiz, e)}
+                              onClick={(e) =>
+                                handleShareQuiz(quiz, firstQuestion, e)
+                              }
                               className="h-10 w-10 p-0 opacity-60 hover:opacity-100 cursor-pointer"
                             >
                               <Share2 className="h-10 w-20" />
