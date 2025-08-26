@@ -7,12 +7,17 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Question, Quiz } from "@/types/quiz";
 import { toast } from "sonner";
+import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
+const API_BASE_URL = "http://localhost:5000/api";
+
 export default function QuizPage() {
   const router = useRouter();
   const params = useParams();
   const quizId = params?.id as string;
+  const { user, loading: authLoading } = useAuth();
+  // const { user } = useAuth();
+
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [originalQuestions, setOriginalQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,6 +28,21 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (user.role === "teacher") {
+      router.push("/teachers-dashboard");
+      return;
+    }
+  }, [user, authLoading, router]);
+
+  // Shuffle helper
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -50,43 +70,48 @@ export default function QuizPage() {
       }
     };
 
-    fetchQuiz();
-  }, [quizId, router]);
+    if (user && user.role === "student") {
+      fetchQuiz();
+    }
+  }, [quizId, router, user]);
+
+  // Handle submit
+  // get the logged-in user
 
   const handleSubmit = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (_timeUp = false) => {
-      if (!quiz) return;
+      if (!quiz || !user) return;
 
-      let correct = 0;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      let answeredCount = 0;
-
-      originalQuestions.forEach((q) => {
-        if (selectedAnswers[q._id] !== undefined) answeredCount++;
-        if (selectedAnswers[q._id] === q.correctAnswer) correct++;
+      const answeredQuestions = quiz.questions.map((q) => {
+        const selectedAnswer = selectedAnswers[q._id]; // ✅ use question ID
+        const isCorrect = selectedAnswer === q.correctAnswer;
+        return {
+          questionId: q._id,
+          questionTitle: q.title,
+          selectedAnswer, // required
+          isCorrect,
+          score: isCorrect ? q.score || 1 : 0,
+          timeTaken: 0,
+        };
       });
 
-      const score = Math.round((correct / originalQuestions.length) * 100);
+      const correct = answeredQuestions.filter((q) => q.isCorrect).length;
+      const score = Math.round((correct / quiz.questions.length) * 100);
 
       try {
         const { data: savedResult } = await axios.post(
-          `${API_BASE_URL}/quizzes/${quiz._id}/results`,
+          `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
           {
-            quizId: quiz._id,
-            quizTitle: quiz.title,
-            score,
-            correctAnswers: correct,
-            totalQuestions: originalQuestions.length,
-            completedAt: new Date().toISOString(),
-            wasRandomized: quiz.questions.length !== originalQuestions.length,
+            userId: user._id, // send user ID from context
+            answers: selectedAnswers,
+            timeTaken: 600 - timeRemaining,
           }
         );
 
         toast.success(`Quiz completed! You scored ${score}%`);
 
         router.push(
-          `/quiz/${quiz._id}/results?attempt=${savedResult.attemptId}`
+          `/quiz/${quiz._id}/results?attempt=${savedResult.result._id}`
         );
       } catch (err) {
         console.error("Error saving results:", err);
@@ -94,9 +119,10 @@ export default function QuizPage() {
         router.push("/");
       }
     },
-    [quiz, originalQuestions, selectedAnswers, router]
+    [quiz, selectedAnswers, router, timeRemaining, user]
   );
 
+  // Timer
   useEffect(() => {
     if (!quiz) return;
     const timer = setInterval(() => {
@@ -126,7 +152,7 @@ export default function QuizPage() {
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
-  if (loading || !quiz)
+  if (authLoading || loading || !quiz) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
@@ -138,6 +164,7 @@ export default function QuizPage() {
         </div>
       </div>
     );
+  }
 
   const currentQ = quiz.questions[currentIndex];
 
@@ -152,7 +179,10 @@ export default function QuizPage() {
           >
             <ChevronLeft className="w-6 h-6 mr-2" /> Back
           </Button>
-          <h1 className="text-3xl md:text-4xl font-bold">{quiz.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            {quiz.title} {/* ✅ Show student name */}
+            <span className="text-lg text-gray-500">– {user?.name}</span>
+          </h1>
           <div
             className={`flex items-center gap-2 text-2xl md:text-3xl font-semibold ${
               timeRemaining < 60 ? "text-red-600" : ""
@@ -163,6 +193,7 @@ export default function QuizPage() {
           </div>
         </header>
 
+        {/* Your quiz content unchanged */}
         <div className="flex flex-col md:flex-row gap-6 border border-amber-200 rounded-lg shadow-lg bg-white p-6 md:p-12 mt-6 md:mt-24">
           <div className="flex-1">
             <div className="mb-4 flex flex-col">
