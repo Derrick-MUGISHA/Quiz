@@ -11,7 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 
-// Cookie helpers
+
 const setCookie = (name: string, value: string, days: number) => {
   const date = new Date();
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
@@ -44,7 +44,7 @@ export default function ConsentModal() {
   const handleAccept = () => {
     setCookie("userConsent", "accepted", 365);
     setShowModal(false);
-    window.location.href = "/dashboard";
+    window.location.href = "/login";
   };
 
   const handleReject = () => {
@@ -69,7 +69,7 @@ export default function ConsentModal() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome!</CardTitle>
           <CardDescription className="text-gray-600 mt-1">
-            Please accept or reject to continue
+            Please accept so that your scores are saved and track your activity 
           </CardDescription>
         </CardHeader>
 
