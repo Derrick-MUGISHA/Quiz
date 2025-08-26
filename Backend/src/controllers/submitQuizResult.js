@@ -4,7 +4,7 @@ const User = require("../models/userMode");
 exports.submitQuizResult = async (req, res) => {
   try {
     const {
-      userId,          // added userId
+      userId,         
       quizId,
       quizTitle,
       score,
@@ -18,7 +18,7 @@ exports.submitQuizResult = async (req, res) => {
     const attemptId = uuidv4();
 
     const result = new QuizResult({
-      userId,          // store the user ID
+      userId,          
       quizId,
       quizTitle,
       score,

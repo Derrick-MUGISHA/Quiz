@@ -10,7 +10,7 @@ import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api`;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 interface QuizResult {
   quizId: string;
