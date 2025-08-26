@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+
+import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import type { AuthContextType, AuthProviderProps } from "@/types/auth";
 import type { User } from "@/types/user";
@@ -7,30 +8,44 @@ import type { User } from "@/types/user";
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-const [user, setUser] = useState<User | null>(() => {
-  const storedUser = Cookies.get("user") || localStorage.getItem("user");
-  return storedUser ? JSON.parse(storedUser) : null;
-});
-
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-const login = (userData: User, token: string) => {
-  if (!userData || !token) return;
+  useEffect(() => {
+    const storedUser = Cookies.get("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else if (typeof window !== "undefined") {
+      const localUser = localStorage.getItem("user");
+      if (localUser) setUser(JSON.parse(localUser));
+    }
+  }, []);
 
-  Cookies.set("token", token, { expires: 7 });
-  Cookies.set("user", JSON.stringify(userData), { expires: 7 });
-  setUser(userData);
+  const login = (userData: User, token: string) => {
+    if (!userData || !token) return;
 
-  localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(userData)); 
+    Cookies.set("token", token, { expires: 7 });
+    Cookies.set("user", JSON.stringify(userData), { expires: 7 });
 
-  console.log("Logged in user:", userData); 
-};
 
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+    }
+
+    setUser(userData);
+    console.log("Logged in user:", userData);
+  };
 
   const logout = () => {
     Cookies.remove("token");
     Cookies.remove("user");
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+
     setUser(null);
   };
 
