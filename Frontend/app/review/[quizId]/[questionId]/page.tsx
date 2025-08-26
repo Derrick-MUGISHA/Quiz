@@ -38,7 +38,7 @@ export default function ReviewPage() {
     const fetchQuiz = async () => {
       try {
         const res = await axios.get(
-          `https://quiz-2-sb0l.onrender.com/api/quizzes/${params.quizId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/quizzes/${params.quizId}`
         );
         setQuiz(res.data);
       } catch (err) {

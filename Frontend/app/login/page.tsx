@@ -35,16 +35,14 @@ export default function LoginPage() {
       const res = await api.post("/login", data);
       const { user, token } = res.data;
 
-      // Save in context + storage
       login(user, token);
 
       toast.success(`Welcome back, ${user.name}!`);
 
-      // Redirect based on role
       if (user.role.toLowerCase() === "teacher") {
-        router.push(`/teachers-dashboard/${user._id}`); // <-- note [id] param
+        router.push(`/teachers-dashboard/${user._id}`);
       } else {
-        router.push("/status/score"); // student page
+        router.push("/status/score");
       }
     } catch (error) {
       let message = "Login failed";
@@ -106,8 +104,6 @@ export default function LoginPage() {
               </p>
             )}
           </div>
-
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white py-3 rounded-lg text-lg font-semibold cursor-pointer"

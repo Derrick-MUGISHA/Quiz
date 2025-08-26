@@ -9,7 +9,7 @@ import { Question, Quiz } from "@/types/quiz";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`;
 
 export default function QuizPage() {
   const router = useRouter();
@@ -75,20 +75,17 @@ export default function QuizPage() {
     }
   }, [quizId, router, user]);
 
-  // Handle submit
-  // get the logged-in user
-
   const handleSubmit = useCallback(
     async (_timeUp = false) => {
       if (!quiz || !user) return;
 
       const answeredQuestions = quiz.questions.map((q) => {
-        const selectedAnswer = selectedAnswers[q._id]; // ✅ use question ID
+        const selectedAnswer = selectedAnswers[q._id];
         const isCorrect = selectedAnswer === q.correctAnswer;
         return {
           questionId: q._id,
           questionTitle: q.title,
-          selectedAnswer, // required
+          selectedAnswer,
           isCorrect,
           score: isCorrect ? q.score || 1 : 0,
           timeTaken: 0,
@@ -102,7 +99,7 @@ export default function QuizPage() {
         const { data: savedResult } = await axios.post(
           `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
           {
-            userId: user._id, // send user ID from context
+            userId: user._id,
             answers: selectedAnswers,
             timeTaken: 600 - timeRemaining,
           }

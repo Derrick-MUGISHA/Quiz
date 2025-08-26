@@ -10,7 +10,7 @@ import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`;
 
 interface QuizResult {
   quizId: string;
@@ -45,8 +45,7 @@ export default function QuizResultsPage() {
         const { data } = await axios.get(
           `${API_BASE_URL}/quizzes/${quizId}/results/${attemptId}`
         );
-
-        // Inject the userName from auth context into the result
+        
         setResult({ ...data, userName: user?.name || "Unknown User" });
       } catch (err) {
         console.error("Error fetching result:", err);
