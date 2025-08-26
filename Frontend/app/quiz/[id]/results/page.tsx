@@ -10,7 +10,7 @@ import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api`;
 
 interface QuizResult {
   quizId: string;
@@ -21,7 +21,7 @@ interface QuizResult {
   completedAt: string;
   wasRandomized?: boolean;
   attemptId: string;
-  userName: string; // <-- added userName
+  userName: string; 
 }
 
 export default function QuizResultsPage() {
