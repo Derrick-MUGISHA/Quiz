@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     "Python quiz",
   ],
   authors: [{ name: "DevQuiz Team" }],
-  metadataBase: new URL("https://yourdomain.com"),
+  metadataBase: new URL("https://quiz-five-rho-90.vercel.app/"),
   alternates: {
-    canonical: "https://yourdomain.com",
+    canonical: "https://quiz-five-rho-90.vercel.app/",
   },
   robots: {
     index: true,
