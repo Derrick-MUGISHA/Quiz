@@ -38,7 +38,7 @@ export default function StudentStatusPage() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const res = await axios.get("https://quiz-2-sb0l.onrender.com/api/users/me", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

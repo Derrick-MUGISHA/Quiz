@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Base API instance
 const api = axios.create({
-  baseURL: "https://quiz-2-sb0l.onrender.com/auth/api",
+  baseURL: "process.env.NEXT_PUBLIC_API_BASE_URL",
   withCredentials: true,
 });
 
