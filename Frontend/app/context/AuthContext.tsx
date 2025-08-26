@@ -2,32 +2,53 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 import type { AuthContextType, AuthProviderProps } from "@/types/auth";
 import type { User } from "@/types/user";
+import { toast } from "sonner";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); 
+
+
+  const fetchUserFromToken = async () => {
+    try {
+      const token = Cookies.get("token") || localStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setUser(res.data);
+    } catch (err) {
+      console.error("Failed to fetch user from token:", err);
+      setUser(null);
+      Cookies.remove("token");
+      Cookies.remove("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+  };
 
   useEffect(() => {
-    const storedUser = Cookies.get("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else if (typeof window !== "undefined") {
-      const localUser = localStorage.getItem("user");
-      if (localUser) setUser(JSON.parse(localUser));
-    }
+    fetchUserFromToken().finally(() => setLoading(false));
   }, []);
 
   const login = (userData: User, token: string) => {
     if (!userData || !token) return;
 
-    Cookies.set("token", token, { expires: 7 });
+    // Store cookies
+    Cookies.set("token", token, { expires: 7, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
     Cookies.set("user", JSON.stringify(userData), { expires: 7 });
 
-
+    // Store localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));
@@ -47,6 +68,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     setUser(null);
+    toast("Logged out successfully");
   };
 
   return (

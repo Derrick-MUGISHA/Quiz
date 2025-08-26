@@ -42,7 +42,7 @@ export default function LoginPage() {
       if (user.role.toLowerCase() === "teacher") {
         router.push(`/teachers-dashboard/${user._id}`);
       } else {
-        router.push("/status/score");
+        router.push("/");
       }
     } catch (error) {
       let message = "Login failed";
