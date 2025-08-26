@@ -17,16 +17,14 @@ const [user, setUser] = useState<User | null>(() => {
 const login = (userData: User, token: string) => {
   if (!userData || !token) return;
 
-  // Store in cookies (existing)
   Cookies.set("token", token, { expires: 7 });
   Cookies.set("user", JSON.stringify(userData), { expires: 7 });
   setUser(userData);
 
-  // Also store in localStorage for API calls or refresh
   localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(userData)); // optional, useful for persistence
+  localStorage.setItem("user", JSON.stringify(userData)); 
 
-  console.log("Logged in user:", userData); // debug to check _id & role
+  console.log("Logged in user:", userData); 
 };
 
 
