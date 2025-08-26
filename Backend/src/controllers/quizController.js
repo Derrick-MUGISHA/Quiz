@@ -32,11 +32,15 @@ exports.getQuizById = async (req, res, next) => {
   }
 }
 
-
-
 exports.submitQuiz = async (req, res, next) => {
   try {
     const { answers, userId, timeTaken } = req.body;
+    
+    // Validate required fields
+    if (!answers || !userId) {
+      return res.status(400).json({ message: "Missing required fields: answers and userId" });
+    }
+    
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
@@ -64,6 +68,9 @@ exports.submitQuiz = async (req, res, next) => {
       };
     });
 
+    // Calculate percentage score
+    const percentageScore = Math.round((correctAnswers / quiz.questions.length) * 100);
+
     // Create a unique attempt ID
     const attemptId = uuidv4();
 
@@ -72,7 +79,7 @@ exports.submitQuiz = async (req, res, next) => {
       _id: attemptId,
       quizId: quiz._id,
       quizTitle: quiz.title,
-      score,
+      score: percentageScore, // Use percentage score
       correctAnswers,
       totalQuestions: quiz.questions.length,
       timeTaken: timeTaken || 0,
@@ -83,7 +90,7 @@ exports.submitQuiz = async (req, res, next) => {
     // Save in user document
     user.quizHistory.push(attempt);
     user.totalQuestionsAnswered += quiz.questions.length;
-    user.totalScore += score;
+    user.totalScore += score; // Raw score for user stats
     user.totalTimeTaken += timeTaken || 0;
     await user.save();
 
@@ -92,20 +99,20 @@ exports.submitQuiz = async (req, res, next) => {
       userId,
       quizId: quiz._id,
       quizTitle: quiz.title,
-      score,
+      score: percentageScore, // Use percentage score
       correctAnswers,
       totalQuestions: quiz.questions.length,
       attemptId,
+      wasRandomized: true, // Since you're shuffling questions
     });
     await quizResult.save();
 
     res.status(200).json({ message: "Quiz submitted", result: attempt });
   } catch (err) {
+    console.error("Error submitting quiz:", err);
     next(err);
   }
 };
-
-
 
 exports.updateQuestionStatus = async (req, res, next) => {
   try {
