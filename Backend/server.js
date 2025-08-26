@@ -4,7 +4,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./src/config/db");
 const quizRoutes = require("./src/routes/quizRoutes");
+const authRoutes = require("./src/routes/auth");
 const errorHandler = require("./src/middleware/errorHandler");
+const { authMiddleware } = require("./src/middleware/auth");
 
 connectDB();
 
@@ -28,12 +30,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
+// ---------- PUBLIC ROUTES ----------
+app.use("/auth/api", authRoutes); // /register, /login, /verify-email
 
-app.use("/api", quizRoutes);
+// ---------- PROTECTED ROUTES ----------
+app.use("/api", quizRoutes); // Only accessible with valid JWT
 
-
+// ---------- ERROR HANDLING ----------
 app.use(errorHandler);
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
