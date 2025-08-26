@@ -28,19 +28,6 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (authLoading) return;
-
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    if (user.role === "teacher") {
-      router.push("/teachers-dashboard");
-      return;
-    }
-  }, [user, authLoading, router]);
 
   // Shuffle helper
   const shuffleArray = <T,>(array: T[]): T[] => {
