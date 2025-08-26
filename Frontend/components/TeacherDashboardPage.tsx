@@ -55,7 +55,7 @@ export default function TeacherDashboardPage() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/quizzes`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/quizzes`
       );
       setQuizzes(res.data);
       const allQuestions = res.data.flatMap((quiz: Quiz) =>
@@ -82,7 +82,7 @@ export default function TeacherDashboardPage() {
     try {
       const newStatus = currentStatus === "published" ? "draft" : "published";
       const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/quizzes/${quizId}/questions/${questionId}/status`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/quizzes/${quizId}/questions/${questionId}/status`,
         { status: newStatus }
       );
       const updatedQuestion = res.data.question;

@@ -12,7 +12,7 @@ interface Question {
   description?: string;
   code?: string;
   options: string[];
-  correctAnswer: number; // index of correct option
+  correctAnswer: number; 
   hint?: string;
   status: "draft" | "published" | "archived";
   category: string;
@@ -38,7 +38,7 @@ export default function ReviewPage() {
     const fetchQuiz = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/quizzes/${params.quizId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/quizzes/${params.quizId}`
         );
         setQuiz(res.data);
       } catch (err) {
