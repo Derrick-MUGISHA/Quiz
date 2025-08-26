@@ -106,7 +106,7 @@ export default function NewQuizForm() {
 
   try {
     setLoading(true);
-    await axios.post("https://quiz-2-sb0l.onrender.com/api/quizzes", {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/quizzes`, {
       title: quizTitle,
       questions,
     });

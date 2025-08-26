@@ -2,7 +2,7 @@ import { Quiz } from "@/types/quiz";
 import axios from "axios";
 
 export async function getQuizzes(): Promise<{ data: Quiz[] | null; error: Error | null }> {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://quiz-2-sb0l.onrender.com/api";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   console.log("Fetching quizzes from:", `${API_URL}/quizzes`);
 
   try {
