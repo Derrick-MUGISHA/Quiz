@@ -18,7 +18,7 @@ const VerifyEmail = () => {
   setStatus("loading");
   try {
     const res = await axios.get(
-      `http://localhost:5000/auth/api/verify-email/${id}`,
+      `https://quiz-2-sb0l.onrender.com/auth/api/verify-email/${id}`,
       { withCredentials: true }
     );
 

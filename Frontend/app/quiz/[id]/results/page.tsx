@@ -10,7 +10,7 @@ import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
 
 interface QuizResult {
   quizId: string;

@@ -102,7 +102,7 @@ export default function QuizPage() {
         const { data: savedResult } = await axios.post(
           `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
           {
-            userId: user.id, // send user ID from context
+            userId: user._id, // send user ID from context
             answers: selectedAnswers,
             timeTaken: 600 - timeRemaining,
           }
