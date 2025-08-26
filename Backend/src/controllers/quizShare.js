@@ -4,11 +4,9 @@ exports.getQuestionByShareLink = async (req, res, next) => {
   try {
     const { shareLink } = req.params;
 
-    // Find the quiz containing this shared question
     const quiz = await Quiz.findOne({ "questions.shareLink": shareLink });
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
-    // Find the specific shared question
     const question = quiz.questions.find(q => q.shareLink === shareLink);
     if (!question) return res.status(404).json({ message: "Question not found" });
 

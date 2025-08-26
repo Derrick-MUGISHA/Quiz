@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Cookies from "@/components/cookies";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "./context/AuthContext";
+import FloatingUserButton from "@/components/FloatingUserButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DevQuiz",
-  description: "Train yourself for the better you with quizzes on coding, web development, and more.",
+  description:
+    "Train yourself for the better you with quizzes on coding, web development, and more.",
   keywords: [
     "DevQuiz",
     "coding quizzes",
@@ -27,7 +30,7 @@ export const metadata: Metadata = {
     "Python quiz",
   ],
   authors: [{ name: "DevQuiz Team" }],
-  metadataBase: new URL("https://yourdomain.com"), 
+  metadataBase: new URL("https://yourdomain.com"),
   alternates: {
     canonical: "https://yourdomain.com",
   },
@@ -37,7 +40,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "DevQuiz – Train yourself for the better you",
-    description: "Sharpen your coding skills with fun, interactive quizzes on web development and programming.",
+    description:
+      "Sharpen your coding skills with fun, interactive quizzes on web development and programming.",
     url: "https://quiz-five-rho-90.vercel.app/",
     siteName: "DevQuiz",
     images: [
@@ -53,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@yourTwitterHandle", 
+    site: "@yourTwitterHandle",
     creator: "@yourTwitterHandle",
     title: "DevQuiz – Train yourself for the better you",
     description: "Sharpen your coding skills with fun, interactive quizzes.",
@@ -76,9 +80,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Cookies />
-        <Toaster position="top-right" />
+        <AuthProvider>
+          {children}
+          <FloatingUserButton />
+          <Cookies />
+          <Toaster position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

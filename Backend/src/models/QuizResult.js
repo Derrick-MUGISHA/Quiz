@@ -8,7 +8,7 @@ const QuizResultSchema = new mongoose.Schema({
   totalQuestions: { type: Number, required: true },
   completedAt: { type: Date, default: Date.now },
   wasRandomized: { type: Boolean, default: false },
-  attemptId: { type: String, required: true, unique: true }, // for shareable link
+  attemptId: { type: String, required: true, unique: true },
 });
 
 module.exports = mongoose.model("QuizResult", QuizResultSchema);

@@ -1,13 +1,24 @@
 const { v4: uuidv4 } = require("uuid");
 const QuizResult = require("../models/QuizResult");
-
-// Submit a quiz result
+const User = require("../models/userMode");
 exports.submitQuizResult = async (req, res) => {
   try {
-    const { quizId, quizTitle, score, correctAnswers, totalQuestions, wasRandomized } = req.body;
+    const {
+      userId,          // added userId
+      quizId,
+      quizTitle,
+      score,
+      correctAnswers,
+      totalQuestions,
+      wasRandomized,
+    } = req.body;
+
+    if (!userId) return res.status(400).json({ message: "User ID is required" });
+
     const attemptId = uuidv4();
 
     const result = new QuizResult({
+      userId,          // store the user ID
       quizId,
       quizTitle,
       score,
@@ -18,13 +29,14 @@ exports.submitQuizResult = async (req, res) => {
     });
 
     await result.save();
-    res.status(201).json(result);
+    res.status(201).json({ result });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Get a quiz result by attemptId
+
+
 exports.getQuizResultByAttempt = async (req, res) => {
   try {
     const { attemptId } = req.params;
@@ -38,3 +50,20 @@ exports.getQuizResultByAttempt = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+exports.getUserQuizHistory = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("name email quizHistory");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      quizHistory: user.quizHistory,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
