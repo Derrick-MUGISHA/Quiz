@@ -7,7 +7,7 @@ import { toast, Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 
 const VerifyEmail = () => {
-  const { id } = useParams(); // <-- matches [id]
+  const { id } = useParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
@@ -18,7 +18,7 @@ const VerifyEmail = () => {
   setStatus("loading");
   try {
     const res = await axios.get(
-      `https://quiz-2-sb0l.onrender.com/auth/api/verify-email/${id}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/auth/api/verify-email/${id}`,
       { withCredentials: true }
     );
 
@@ -47,7 +47,7 @@ const VerifyEmail = () => {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <main className="flex items-center justify-center h-screenbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4">
+      <main className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4">
         <div className="bg-white p-10 rounded-xl shadow-lg text-center max-w-md w-full">
           {status === "loading" && (
             <div className="flex flex-col items-center">
