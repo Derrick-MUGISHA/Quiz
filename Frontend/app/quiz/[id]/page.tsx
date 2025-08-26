@@ -9,7 +9,7 @@ import { Question, Quiz } from "@/types/quiz";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api`;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 export default function QuizPage() {
   const router = useRouter();
