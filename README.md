@@ -1,30 +1,31 @@
 # 📚 Quiz Builder Platform
 
-A **full-stack quiz builder platform** that allows teachers to create quizzes and students to take them in real-time. The project is split into two parts:
+A **full-stack quiz builder platform** that empowers teachers to create quizzes and students to take them in real-time. Built with modern web technologies, it focuses on usability, scalability, and performance.
 
-* 🎨 **Frontend**: Built with **Next.js 15, TypeScript, TailwindCSS, shadcn/ui**, and **Axios**.
-* ⚙️ **Backend**: Built with **Node.js, Express, MongoDB (Mongoose)**, with authentication(cookies), quiz management, and result tracking.
+* 🎨 **Frontend**: **Next.js 15, TypeScript, TailwindCSS, shadcn/ui, Axios**
+* ⚙️ **Backend**: **Node.js, Express, MongoDB (Mongoose)** with authentication, quiz management, and result tracking.
 
 ---
 
 ## 🚀 Features
 
-### Teachers
+### 🧑‍🏫 Teachers
 
-* Create, Publish, and Review.
-* Add multiple-choice questions with hints and time limits.
-* Track student performance.
+* Create, publish, and manage quizzes.
+* Add multiple-choice questions with hints, timers, and scoring.
+* Track student performance with detailed results.
 
 ### 🎯 Students
 
-* Take quizzes in real-time with countdown timers.
-* Select answers using modern UI (radio buttons, checkers).
-* View results instantly after submission.
+* Take quizzes with real-time countdown timers.
+* Modern and responsive UI for answering quizzes.
+* View instant results and performance reports.
 
 ### 🔒 Security
 
-* Authentication & Authorization(cooke management).
+* Authentication and authorization.
 * Environment variables for sensitive data.
+* Secure API endpoints.
 
 ---
 
@@ -32,47 +33,63 @@ A **full-stack quiz builder platform** that allows teachers to create quizzes an
 
 ### Frontend (`/frontend`)
 
-* [Next.js 15](https://nextjs.org/) – App Router
-* [TypeScript](https://www.typescriptlang.org/)
-* [TailwindCSS](https://tailwindcss.com/)
-* [shadcn/ui](https://ui.shadcn.com/) – modern UI components
-* [Axios](https://axios-http.com/) – API communication
+* [Next.js 15](https://nextjs.org/) – App Router for modern routing.
+* [TypeScript](https://www.typescriptlang.org/) – Type safety.
+* [TailwindCSS](https://tailwindcss.com/) – Utility-first styling.
+* [shadcn/ui](https://ui.shadcn.com/) – UI components.
+* [Axios](https://axios-http.com/) – API requests.
 
-### Backend (`/backend`)
+### Backend (`/Backend`)
 
-* [Node.js](https://nodejs.org/) + [Express.js](https://expressjs.com/)
-* [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/)
-* [CORS](https://expressjs.com/en/resources/middleware/cors.html)
-* REST API with authentication and quiz management
+* [Node.js](https://nodejs.org/) + [Express.js](https://expressjs.com/) – REST API.
+* [MongoDB](https://www.mongodb.com/) + [Mongoose](https://mongoosejs.com/) – Database.
+* [CORS](https://expressjs.com/en/resources/middleware/cors.html) – Cross-origin requests.
+* JWT/cookie-based authentication.
+* Quiz & user management endpoints.
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Structure (Updated)
 
 ```
 quiz-builder/
-│── backend/                # Backend (Node.js + Express + MongoDB)
-│   ├── controllers/        # Quiz & Auth controllers
-│   ├── models/             # Mongoose schemas
-│   ├── routes/             # Express routes
-│   ├── server.js           # App entry point
-│   ├── package.json
-│   └── .env                # Backend environment variables
 │
-│── frontend/               # Frontend (Next.js 15 + TS)
-│   ├── app/                # Next.js App Router pages
-│   ├── components/         # UI components
-│   ├── lib/                # Utility functions
-│   ├── public/             # Static assets
+├── Backend/                  # Node.js + Express + MongoDB
+│   ├── src/                  # Source code
+│   │   ├── controllers/      # Quiz & Auth controllers
+│   │   ├── models/           # Mongoose schemas
+│   │   ├── routes/           # Express routes
+│   ├── server.js             # Backend entry point
+│   ├── seedTeacher.js        # Seed initial teacher data
+│   ├── updateShareLinks.js   # Utility script
 │   ├── package.json
-│   └── .env                # Frontend environment variables
+│   ├── package-lock.json
+│   ├── .env                  # Backend environment variables
+│   ├── .env.example
+│   ├── .dockerignore
+│   └── docker-compose.yml    # Docker container setup
 │
-└── README.md               # Combined documentation
+├── frontend/                 # Next.js 15 + TypeScript
+│   ├── app/                  # Next.js App Router pages
+│   ├── api/                  # Frontend API routes (optional)
+│   ├── components/           # Reusable UI components
+│   ├── lib/                  # Utility functions
+│   ├── types/                # TypeScript types
+│   ├── public/               # Static assets
+│   ├── middleware.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── tsconfig.json
+│   ├── next.config.ts
+│   └── .env.local            # Frontend environment variables
+│
+├── Dockerfile                # Dockerfile for backend
+└── README.md                 # Project documentation
 ```
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone Repository
 
@@ -81,26 +98,36 @@ git clone https://github.com/your-username/quiz-builder.git
 cd quiz-builder
 ```
 
+---
+
 ### 2️⃣ Backend Setup
 
 ```bash
-cd backend
+cd Backend
 npm install
 ```
 
-Create a `.env` file in `/backend` with:
+Create a `.env` file in `/Backend`:
 
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 ```
 
-Run backend:
+**Run backend locally:**
 
 ```bash
-cd backend/src
 node server.js
 ```
+
+**Or spin up the backend container using Docker:**
+
+```bash
+docker-compose up
+```
+
+This will start the backend with all necessary configurations automatically.
 
 ---
 
@@ -108,20 +135,22 @@ node server.js
 
 ```bash
 cd frontend
-pnpm install
+npm install
 ```
 
-Create a `.env` file in `/frontend` with:
+Create a `.env.local` file in `/frontend`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
-Run frontend:
+Run frontend locally:
 
 ```bash
 npm run dev
 ```
+
+Visit `http://localhost:3000` to see the app.
 
 ---
 
@@ -129,17 +158,51 @@ npm run dev
 
 ### **Quizzes**
 
-* `POST /api/quizzes` → Create quiz
+* `POST /api/quizzes` → Create a new quiz
 * `GET /api/quizzes` → Get all quizzes
 * `GET /api/quizzes/:id` → Get quiz by ID
 * `POST /api/quizzes/:id/submit` → Submit answers and get results
+
+### **Users**
+
+* `POST /api/auth/register` → Register new teacher/student
+* `POST /api/auth/login` → Login
+* `GET /api/users/:id` → Get user profile
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Commit changes (`git commit -m 'Add my feature'`)
-4. Push to branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+We welcome contributions! Here’s how you can help:
+
+1. **Fork the repository** to your GitHub account.
+2. **Clone your fork** locally:
+
+   ```bash
+   git clone https://github.com/your-username/quiz-builder.git
+   ```
+3. **Create a feature branch** for your work:
+
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+4. **Make changes** and commit:
+
+   ```bash
+   git commit -m "Add feature X"
+   ```
+5. **Push your branch** to GitHub:
+
+   ```bash
+   git push origin feature/my-feature
+   ```
+6. **Open a Pull Request** against the `main` branch of the original repository.
+7. **Discuss and iterate** until the PR is approved and merged.
+
+**Branching Guidelines:**
+
+* `main` → Production-ready code
+* `master` → Active development
+* `feature/*` → New features
+* `bugfix/*` → Bug fixes
+* `hotfix/*` → Critical fixes
