@@ -30,7 +30,7 @@ export default function FloatingUserButton() {
       logout();
       router.push("/login");
     } else if (action === "score") {
-      router.push("/student/score");
+      router.push("/status/score");
     } else if (action === "dashboard") {
       router.push(`/teachers-dashboard/${user?._id}`); 
     }

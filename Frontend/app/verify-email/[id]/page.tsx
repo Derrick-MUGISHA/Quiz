@@ -47,7 +47,7 @@ const VerifyEmail = () => {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <main className="flex items-center justify-center h-screen bg-gray-100 px-4">
+      <main className="flex items-center justify-center h-screenbg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4">
         <div className="bg-white p-10 rounded-xl shadow-lg text-center max-w-md w-full">
           {status === "loading" && (
             <div className="flex flex-col items-center">
