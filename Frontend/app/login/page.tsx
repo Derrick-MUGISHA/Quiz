@@ -29,20 +29,23 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormInputs>();
 
-
-
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setLoading(true);
     try {
       const res = await api.post("/login", data);
       const { user, token } = res.data;
 
+      // Save in context + storage
       login(user, token);
+
       toast.success(`Welcome back, ${user.name}!`);
 
       // Redirect based on role
-      if (user.role === "teacher") router.push("/teacher-dashboard");
-      else router.push("/");
+      if (user.role.toLowerCase() === "teacher") {
+        router.push(`/teachers-dashboard/${user._id}`); // <-- note [id] param
+      } else {
+        router.push("/status/score"); // student page
+      }
     } catch (error) {
       let message = "Login failed";
 
@@ -57,7 +60,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="w-full max-w-md p-10 bg-white rounded-2xl shadow-xl border border-gray-200">
         <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
           Login to Your Account
