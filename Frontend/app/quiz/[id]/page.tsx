@@ -9,7 +9,7 @@ import { Question, Quiz } from "@/types/quiz";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+const API_BASE_URL = "http://localhost:5000/api";
 
 export default function QuizPage() {
   const router = useRouter();
@@ -28,6 +28,19 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (user.role === "teacher") {
+      router.push("/teachers-dashboard");
+      return;
+    }
+  }, [user, authLoading, router]);
 
   // Shuffle helper
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -62,19 +75,20 @@ export default function QuizPage() {
     }
   }, [quizId, router, user]);
 
-
+  // Handle submit
+  // get the logged-in user
 
   const handleSubmit = useCallback(
     async (_timeUp = false) => {
       if (!quiz || !user) return;
 
       const answeredQuestions = quiz.questions.map((q) => {
-        const selectedAnswer = selectedAnswers[q._id]; 
+        const selectedAnswer = selectedAnswers[q._id]; // ✅ use question ID
         const isCorrect = selectedAnswer === q.correctAnswer;
         return {
           questionId: q._id,
           questionTitle: q.title,
-          selectedAnswer,
+          selectedAnswer, // required
           isCorrect,
           score: isCorrect ? q.score || 1 : 0,
           timeTaken: 0,
@@ -88,7 +102,7 @@ export default function QuizPage() {
         const { data: savedResult } = await axios.post(
           `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
           {
-            userId: user._id, 
+            userId: user._id, // send user ID from context
             answers: selectedAnswers,
             timeTaken: 600 - timeRemaining,
           }
