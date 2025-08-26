@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-
 import DemoBackgroundPaths from "@/components/Background";
 import QuizCards from "@/components/QuizCards";
 
