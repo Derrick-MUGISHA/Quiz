@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Trophy, RotateCcw, Home, Share2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "https://quiz-2-sb0l.onrender.com/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 interface QuizResult {
   quizId: string;
@@ -21,43 +21,73 @@ interface QuizResult {
   completedAt: string;
   wasRandomized?: boolean;
   attemptId: string;
-  userName: string; // <-- added userName
+  userName: string;
 }
 
 export default function QuizResultsPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const quizId = params.id as string;
-    const { user } = useAuth();
+  const { user } = useAuth();
 
   const [result, setResult] = useState<QuizResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResult = async () => {
-      const attemptId = new URLSearchParams(window.location.search).get("attempt");
+      const attemptId = searchParams.get("attempt");
+
+      console.log("Fetching result for:", { quizId, attemptId });
+
       if (!attemptId) {
+        console.error("No attempt ID found in URL");
+        setError("No attempt ID found");
         setLoading(false);
         return;
       }
 
       try {
+        console.log(
+          `Making request to: ${API_BASE_URL}/quizzes/${quizId}/results/${attemptId}`
+        );
+
         const { data } = await axios.get(
           `${API_BASE_URL}/quizzes/${quizId}/results/${attemptId}`
         );
 
-        // Inject the userName from auth context into the result
+        console.log("Received result data:", data);
+
         setResult({ ...data, userName: user?.name || "Unknown User" });
-      } catch (err) {
+        setError(null);
+      } catch (err: unknown) {
         console.error("Error fetching result:", err);
+
+        if (axios.isAxiosError(err)) {
+          console.error("Response status:", err.response?.status);
+          console.error("Response data:", err.response?.data);
+          setError(
+            `Failed to load results: ${
+              err.response?.data?.message || err.message
+            }`
+          );
+        } else if (err instanceof Error) {
+          setError(`Failed to load results: ${err.message}`);
+        } else {
+          setError("Failed to load results: Unknown error");
+        }
+
         setResult(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchResult();
-  }, [quizId, user?.name]);
+    if (user) {
+      fetchResult();
+    }
+  }, [quizId, user?.name, searchParams, user]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600 dark:text-green-400";
@@ -130,29 +160,47 @@ export default function QuizResultsPage() {
     }
   };
 
-const handleCopyQuizLink = async () => {
-  if (!result) return;
-  const quizUrl = `${window.location.origin}/quiz/${result.quizId}`;
-  await navigator.clipboard.writeText(quizUrl);
-  toast.success("Quiz link copied to clipboard!");
-};
+  const handleCopyQuizLink = async () => {
+    if (!result) return;
+    const quizUrl = `${window.location.origin}/quiz/${result.quizId}`;
+    await navigator.clipboard.writeText(quizUrl);
+    toast.success("Quiz link copied to clipboard!");
+  };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
           <div className="w-16 h-16 border-4 border-gradient-from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-lg font-medium text-green-700">
-            Loading Our Results
-          </p>
+          <p className="text-lg font-medium text-green-700">Loading Results</p>
           <p className="text-sm text-gray-500">
             Please wait while we prepare your results ✨
           </p>
         </div>
       </div>
     );
+  }
 
-  if (!result)
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2 text-red-600">
+            Error Loading Results
+          </h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <div className="flex gap-2 justify-center">
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+            <Button variant="outline" onClick={() => router.push("/")}>
+              Back to Quiz List
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!result) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="text-center">
@@ -164,6 +212,7 @@ const handleCopyQuizLink = async () => {
         </div>
       </div>
     );
+  }
 
   const scoreBadge = getScoreBadge(result.score);
 
@@ -177,12 +226,17 @@ const handleCopyQuizLink = async () => {
                 <Trophy className="h-10 w-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-3xl mb-2 font-bold">Quiz Complete!</CardTitle>
-            {/* Display user name */}
-            <p className="text-lg font-semibold text-gray-700 mb-1">{result?.userName}</p>
+            <CardTitle className="text-3xl mb-2 font-bold">
+              Quiz Complete!
+            </CardTitle>
+            <p className="text-lg font-semibold text-gray-700 mb-1">
+              {result?.userName}
+            </p>
             <p className="text-lg text-muted-foreground">{result?.quizTitle}</p>
             {result?.wasRandomized && (
-              <Badge variant="outline" className="mt-2 bg-green-200">Questions were randomized</Badge>
+              <Badge variant="outline" className="mt-2 bg-green-200">
+                Questions were randomized
+              </Badge>
             )}
           </CardHeader>
 

@@ -9,7 +9,13 @@ import { Question, Quiz } from "@/types/quiz";
 import { toast } from "sonner";
 import { useAuth } from "@/app/context/AuthContext";
 
-const API_BASE_URL = "http://localhost:5000/api";
+type UserType = {
+  _id?: string;
+  id?: string;
+  userId?: string;
+  user_id?: string;
+};
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function QuizPage() {
   const router = useRouter();
@@ -28,19 +34,19 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (authLoading) return;
+  // useEffect(() => {
+  //   if (authLoading) return;
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+  //   if (!user) {
+  //     router.push("/login");
+  //     return;
+  //   }
 
-    if (user.role === "teacher") {
-      router.push("/teachers-dashboard");
-      return;
-    }
-  }, [user, authLoading, router]);
+  //   if (user.role === "teacher") {
+  //     router.push("/teachers-dashboard");
+  //     return;
+  //   }
+  // }, [user, authLoading, router]);
 
   // Shuffle helper
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -78,49 +84,95 @@ export default function QuizPage() {
   // Handle submit
   // get the logged-in user
 
-  const handleSubmit = useCallback(
-    async (_timeUp = false) => {
-      if (!quiz || !user) return;
+// Clean handleSubmit function for QuizPage (remove debug logs for production)
+const handleSubmit = useCallback(
+  async (_timeUp = false) => {
+    if (!quiz || !user) {
+      toast.error("Missing quiz or user data");
+      return;
+    }
 
-      const answeredQuestions = quiz.questions.map((q) => {
-        const selectedAnswer = selectedAnswers[q._id]; // ✅ use question ID
-        const isCorrect = selectedAnswer === q.correctAnswer;
-        return {
-          questionId: q._id,
-          questionTitle: q.title,
-          selectedAnswer, // required
-          isCorrect,
-          score: isCorrect ? q.score || 1 : 0,
-          timeTaken: 0,
-        };
+    // Robust user ID extraction
+    const getUserId = (userObj: UserType) => {
+      return userObj._id || userObj.id || userObj.userId || userObj.user_id;
+    };
+
+    const userId = getUserId(user);
+    
+    if (!userId) {
+      toast.error("User authentication issue. Please log in again.");
+      router.push("/login");
+      return;
+    }
+
+    const answeredQuestions = quiz.questions.map((q) => {
+      const selectedAnswer = selectedAnswers[q._id]; 
+      const isCorrect = selectedAnswer === q.correctAnswer;
+      return {
+        questionId: q._id,
+        questionTitle: q.title,
+        selectedAnswer,
+        isCorrect,
+        score: isCorrect ? q.score || 1 : 0,
+        timeTaken: 0,
+      };
+    });
+
+    const correct = answeredQuestions.filter((q) => q.isCorrect).length;
+    const score = Math.round((correct / quiz.questions.length) * 100);
+
+    const submitData = {
+      userId: userId,
+      answers: selectedAnswers,
+      timeTaken: 600 - timeRemaining,
+    };
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
+        submitData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      toast.success(`Quiz completed! You scored ${score}%`);
+
+      router.push(
+        `/quiz/${quiz._id}/results?attempt=${response.data.result._id}`
+      );
+    } catch (err: unknown) {
+  if (axios.isAxiosError(err)) {
+    const errorMessage = err.response?.data?.message || "Failed to save results";
+    toast.error(`${errorMessage}. Returning to start page...`);
+  } else if (err instanceof Error) {
+    toast.error(`${err.message}. Returning to start page...`);
+  } else {
+    toast.error("An unknown error occurred. Returning to start page...");
+  }
+  router.push("/");
+}
+
+  },
+  [quiz, selectedAnswers, router, timeRemaining, user]
+);
+
+  useEffect(() => {
+    if (!quiz) return;
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmit(true);
+          return 0;
+        }
+        return prev - 1;
       });
-
-      const correct = answeredQuestions.filter((q) => q.isCorrect).length;
-      const score = Math.round((correct / quiz.questions.length) * 100);
-
-      try {
-        const { data: savedResult } = await axios.post(
-          `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
-          {
-            userId: user._id, // send user ID from context
-            answers: selectedAnswers,
-            timeTaken: 600 - timeRemaining,
-          }
-        );
-
-        toast.success(`Quiz completed! You scored ${score}%`);
-
-        router.push(
-          `/quiz/${quiz._id}/results?attempt=${savedResult.result._id}`
-        );
-      } catch (err) {
-        console.error("Error saving results:", err);
-        toast.error("Failed to save results. Returning to start page...");
-        router.push("/");
-      }
-    },
-    [quiz, selectedAnswers, router, timeRemaining, user]
-  );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [quiz, handleSubmit]);
 
   // Timer
   useEffect(() => {
