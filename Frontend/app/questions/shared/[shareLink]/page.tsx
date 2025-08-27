@@ -35,19 +35,16 @@ export default function ReviewPage() {
   const [showHint, setShowHint] = useState(true);
 
   useEffect(() => {
-    if (!params.quizId || !params.questionId) return;
+    if (!params.shareLink) return;
 
     const fetchQuiz = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/quizzes/${params.quizId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL_Auth}/api/questions/shared/${params.shareLink}`
         );
         const quizData: Quiz = res.data;
-        const idx = quizData.questions.findIndex(
-          (q) => q._id === params.questionId
-        );
-        setCurrentIndex(idx >= 0 ? idx : 0);
         setQuiz(quizData);
+        setCurrentIndex(0);
       } catch (err) {
         console.error(err);
       } finally {
@@ -56,7 +53,7 @@ export default function ReviewPage() {
     };
 
     fetchQuiz();
-  }, [params.quizId, params.questionId]);
+  }, [params.shareLink]);
 
   if (loading) return <p className="p-6">Loading question...</p>;
   if (!quiz) return <p className="p-6">Quiz not found!</p>;
