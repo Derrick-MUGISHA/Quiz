@@ -5,6 +5,7 @@ import Cookies from "@/components/cookies";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "./context/AuthContext";
 import FloatingUserButton from "@/components/FloatingUserButton";
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,6 +83,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <Analytics />
           <FloatingUserButton />
           <Cookies />
           <Toaster position="top-right" />
