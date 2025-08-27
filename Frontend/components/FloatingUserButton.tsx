@@ -13,7 +13,7 @@ export default function FloatingUserButton() {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close dropdown if clicked outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -36,7 +36,7 @@ export default function FloatingUserButton() {
     }
   };
 
-  // Colors & icons based on role
+
   const buttonStyle = user
     ? user.role === "student"
       ? "bg-green-600 hover:bg-green-700"

@@ -45,7 +45,7 @@ exports.getUserQuizHistory = async (req, res) => {
   }
 };
 
-// Alternative method if you want to keep the POST endpoint for results
+
 exports.submitQuizResult = async (req, res) => {
   try {
     const {
