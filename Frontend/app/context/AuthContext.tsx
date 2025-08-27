@@ -44,11 +44,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = (userData: User, token: string) => {
     if (!userData || !token) return;
 
-    // Store cookies
+
     Cookies.set("token", token, { expires: 7, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
     Cookies.set("user", JSON.stringify(userData), { expires: 7 });
 
-    // Store localStorage
+
     if (typeof window !== "undefined") {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));

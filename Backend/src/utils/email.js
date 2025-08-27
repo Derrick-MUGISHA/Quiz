@@ -18,7 +18,7 @@ if (!EMAIL_USER || !EMAIL_PASS) {
 const sendVerificationEmail = async (user, token) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail", // or your preferred SMTP provider
+      service: "gmail", 
       auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS,

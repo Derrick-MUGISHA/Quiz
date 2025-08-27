@@ -22,7 +22,7 @@ router.patch("/quizzes/:quizId/questions/:questionId/status", updateQuestionStat
 router.get("/quizzes/:id/results/:attemptId", getQuizResultByAttempt);
 router.get("/users/quiz-history", getUserQuizHistory);
 
-// New route for shared question
+// route for shared question
 router.get("/questions/shared/:shareLink", getQuestionByShareLink);
 
 module.exports = router;
