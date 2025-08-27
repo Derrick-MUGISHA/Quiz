@@ -14,7 +14,7 @@ const QuestionSchema = new mongoose.Schema({
     correctAnswer: Number,
     hint: String,
     score: { type: Number, default: 1 },
-    shareLink: String,
+    shareLink: String, // we will store only UUID
     status: { type: String, enum: ["draft", "published", "archived"], default: "draft" },
     rank: { type: String, enum: ["beginner", "intermediate", "professional"], required: true },
     code: String
@@ -37,10 +37,9 @@ async function updateShareLinks() {
             let updated = false;
 
             quiz.questions.forEach(q => {
-                if (!q.shareLink || q.shareLink.startsWith("http://localhost:5000/quiz/")) {
-                    q.shareLink = q.shareLink
-                        ? q.shareLink.replace("http://localhost:5000/quiz/", "https://quiz-five-rho-90.vercel.app/quiz/")
-                        : `https://quiz-five-rho-90.vercel.app/quiz/${uuidv4()}`;
+                // Only set a new UUID if shareLink is missing or contains full URL
+                if (!q.shareLink || q.shareLink.includes("http")) {
+                    q.shareLink = uuidv4(); // store only UUID
                     updated = true;
                     totalUpdated++;
                 }
@@ -51,7 +50,7 @@ async function updateShareLinks() {
             }
         }
 
-        console.log(`Updated ${totalUpdated} question share links`);
+        console.log(`Updated ${totalUpdated} question share links to UUID only`);
     } catch (err) {
         console.error(err);
     } finally {
