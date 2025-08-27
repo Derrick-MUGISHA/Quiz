@@ -63,7 +63,7 @@ export default function FloatingUserButton() {
     <LogInIcon className="w-7 h-7" />
   );
 
-  const isNavigating = pathname !== "/"; // 👈 check if not on home
+  const isNavigating = pathname !== "/";
 
   return (
     <div ref={ref} className="fixed right-6 bottom-6 z-50">
