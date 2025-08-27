@@ -54,8 +54,35 @@ export default function SharedQuizView() {
     fetchQuiz();
   }, [params.shareLink]);
 
-  if (loading) return <p className="p-6 text-center">Loading question...</p>;
-  if (!quiz) return <p className="p-6 text-center">Quiz not found!</p>;
+  if (loading)
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+          <div className="w-16 h-16 border-4 border-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-lg font-medium text-gray-700">Loading Your Link</p>
+          <p className="text-sm text-gray-500">
+            Please wait while we prepare your Info ✨
+          </p>
+        </div>
+      </div>
+    );
+  if (!quiz)
+    return (
+      <div className="flex flex-col justify-center items-center text-center py-16">
+        <h3 className="text-xl md:text-2xl font-bold mb-2">
+          Failed to load Link 😢
+        </h3>
+        {/* <p className="text-muted-foreground mb-4">{err}</p> */}
+        <div className="flex justify-center">
+          {/* <Button
+            onClick={fetchQuizzes}
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform cursor-pointer"
+          >
+            <RefreshCw className="h-5 w-5" /> Retry
+          </Button> */}
+        </div>
+      </div>
+    );
 
   const currentQ = quiz.questions[currentIndex];
 
@@ -69,7 +96,7 @@ export default function SharedQuizView() {
         <Button
           variant="ghost"
           className="group rounded-full border bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white"
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
         >
           <ChevronLeft className="w-6 h-6 mr-2" /> Back
         </Button>
@@ -98,7 +125,6 @@ export default function SharedQuizView() {
             )}
           </div>
 
-          
           <div className="flex flex-col gap-2 mb-4">
             {currentQ.options.map((opt, idx) => (
               <div
@@ -119,14 +145,12 @@ export default function SharedQuizView() {
             ))}
           </div>
 
-         
           {currentQ.hint && (
             <p className="mt-2 p-3 bg-yellow-100 rounded text-gray-800">
               <strong>Hint:</strong> {currentQ.hint}
             </p>
           )}
 
-          
           <div className="mt-6 p-4 border rounded bg-gray-50 text-gray-700">
             <p>
               <strong>Status:</strong> {currentQ.status}
@@ -143,7 +167,6 @@ export default function SharedQuizView() {
             </p>
           </div>
 
-          
           <div className="flex justify-between mt-6">
             <Button
               onClick={handlePrev}
