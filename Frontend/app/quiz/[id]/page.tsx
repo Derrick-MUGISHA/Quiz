@@ -81,10 +81,9 @@ export default function QuizPage() {
     }
   }, [quizId, router, user]);
 
-  // Handle submit
-  // get the logged-in user
+ 
 
-// Clean handleSubmit function for QuizPage (remove debug logs for production)
+
 const handleSubmit = useCallback(
   async (_timeUp = false) => {
     if (!quiz || !user) {
@@ -92,7 +91,7 @@ const handleSubmit = useCallback(
       return;
     }
 
-    // Robust user ID extraction
+
     const getUserId = (userObj: UserType) => {
       return userObj._id || userObj.id || userObj.userId || userObj.user_id;
     };
@@ -232,7 +231,7 @@ const handleSubmit = useCallback(
             <ChevronLeft className="w-6 h-6 mr-2" /> Back
           </Button>
           <h1 className="text-3xl md:text-4xl font-bold">
-            {quiz.title} {/* ✅ Show student name */}
+            {quiz.title} 
             <span className="text-lg text-gray-500">– {user?.name}</span>
           </h1>
           <div
@@ -245,7 +244,7 @@ const handleSubmit = useCallback(
           </div>
         </header>
 
-        {/* Your quiz content unchanged */}
+        
         <div className="flex flex-col md:flex-row gap-6 border border-amber-200 rounded-lg shadow-lg bg-white p-6 md:p-12 mt-6 md:mt-24">
           <div className="flex-1">
             <div className="mb-4 flex flex-col">

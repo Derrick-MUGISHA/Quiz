@@ -79,7 +79,7 @@ exports.submitQuiz = async (req, res, next) => {
       _id: attemptId,
       quizId: quiz._id,
       quizTitle: quiz.title,
-      score: percentageScore, // Use percentage score
+      score: percentageScore,
       correctAnswers,
       totalQuestions: quiz.questions.length,
       timeTaken: timeTaken || 0,
@@ -90,7 +90,7 @@ exports.submitQuiz = async (req, res, next) => {
     // Save in user document
     user.quizHistory.push(attempt);
     user.totalQuestionsAnswered += quiz.questions.length;
-    user.totalScore += score; // Raw score for user stats
+    user.totalScore += score;
     user.totalTimeTaken += timeTaken || 0;
     await user.save();
 
@@ -99,11 +99,11 @@ exports.submitQuiz = async (req, res, next) => {
       userId,
       quizId: quiz._id,
       quizTitle: quiz.title,
-      score: percentageScore, // Use percentage score
+      score: percentageScore,
       correctAnswers,
       totalQuestions: quiz.questions.length,
       attemptId,
-      wasRandomized: true, // Since you're shuffling questions
+      wasRandomized: true,
     });
     await quizResult.save();
 

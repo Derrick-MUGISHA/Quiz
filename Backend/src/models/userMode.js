@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
-// Answered question schema
+
 const AnsweredQuestionSchema = new mongoose.Schema({
   questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz.questions", required: true },
   questionTitle: { type: String, required: true },
@@ -11,7 +11,7 @@ const AnsweredQuestionSchema = new mongoose.Schema({
   timeTaken: { type: Number, default: 0 },
 }, { _id: false });
 
-// Completed quiz schema
+
 const QuizHistorySchema = new mongoose.Schema({
   quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz", required: true },
   quizTitle: { type: String, required: true },
@@ -23,7 +23,7 @@ const QuizHistorySchema = new mongoose.Schema({
   answeredQuestions: [AnsweredQuestionSchema]
 }, { _id: false });
 
-// Main user schema
+
 const UserSchema = new mongoose.Schema({
   userId: { type: String, default: uuidv4, unique: true },
   name: { type: String, required: true, trim: true },
@@ -31,23 +31,23 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   isEmailVerified: { type: Boolean, default: false },
 
-  // ✅ Email verification
+
   verificationToken: { type: String },
   verificationTokenExpiry: { type: Date },
 
-  // roles
+
   role: { type: String, enum: ["student", "teacher"], default: "student" },
 
-  // global stats
+
   totalQuestionsAnswered: { type: Number, default: 0 },
   totalScore: { type: Number, default: 0 },
   totalTimeTaken: { type: Number, default: 0 },
 
-  // quiz history
+
   quizHistory: [QuizHistorySchema]
 }, { timestamps: true });
 
-// cleanup response JSON
+
 UserSchema.set("toJSON", {
   transform: (doc, ret) => {
     ret.id = ret._id;
