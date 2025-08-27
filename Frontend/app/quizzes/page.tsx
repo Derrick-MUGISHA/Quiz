@@ -1,4 +1,3 @@
-// app/quizzes/page.tsx
 import { getQuizzes } from "@/api/getQuiz";
 import QuizCards from "@/components/QuizCards";
 
