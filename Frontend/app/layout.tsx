@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "./context/AuthContext";
 import FloatingUserButton from "@/components/FloatingUserButton";
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   authors: [{ name: "DevQuiz Team/Derrick" }],
   metadataBase: new URL("https://quiz-five-rho-90.vercel.app"),
   alternates: {
-    canonical: "https://quiz-five-rho-90.vercel.app",
+    canonical: "https://quiz-five-rho-90.vercel.app/",
   },
   robots: {
     index: true,
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     title: "DevQuiz – Train yourself for the better you",
     description:
       "Sharpen your coding skills with fun, interactive quizzes on web development and programming.",
-    url: "https://quiz-five-rho-90.vercel.app",
+    url: "https://quiz-five-rho-90.vercel.app/",
     siteName: "DevQuiz",
     images: [
       {
@@ -84,6 +85,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Analytics />
+          <SpeedInsights />
           <FloatingUserButton />
           <Cookies />
           <Toaster position="top-right" />
