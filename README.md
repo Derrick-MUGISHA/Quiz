@@ -49,7 +49,7 @@ A **full-stack quiz builder platform** that empowers teachers to create quizzes 
 
 ---
 
-## 📂 Project Structure (Updated)
+## 📂 Project Structure (Updated Up to 26/9/25)
 
 ```
 quiz-builder/
@@ -101,6 +101,11 @@ cd quiz-builder
 ---
 
 ### 2️⃣ Backend Setup
+
+> ⚠️ **Important:** The backend requires **Node.js (v18 or higher)** to run properly.  
+> Make sure you have Node.js installed before starting the backend.  
+> [Download Node.js](https://nodejs.org/)
+
 
 ```bash
 cd Backend
