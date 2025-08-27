@@ -6,7 +6,7 @@ const validator = require("validator");
 const { sendVerificationEmail } = require("../utils/email");
 
 const JWT_SECRET = process.env.JWT_SECRET || "YOUR_DEFAULT_SECRET";
-const VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000; // 24h
+const VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60 * 1000; 
 
 // ------------------ REGISTER ------------------
 exports.register = async (req, res) => {

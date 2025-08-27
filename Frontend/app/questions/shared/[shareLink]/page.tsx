@@ -98,7 +98,7 @@ export default function SharedQuizView() {
             )}
           </div>
 
-          {/* Options (view-only) */}
+          
           <div className="flex flex-col gap-2 mb-4">
             {currentQ.options.map((opt, idx) => (
               <div
@@ -119,14 +119,14 @@ export default function SharedQuizView() {
             ))}
           </div>
 
-          {/* Optional Hint */}
+         
           {currentQ.hint && (
             <p className="mt-2 p-3 bg-yellow-100 rounded text-gray-800">
               <strong>Hint:</strong> {currentQ.hint}
             </p>
           )}
 
-          {/* Question Meta */}
+          
           <div className="mt-6 p-4 border rounded bg-gray-50 text-gray-700">
             <p>
               <strong>Status:</strong> {currentQ.status}
@@ -143,7 +143,7 @@ export default function SharedQuizView() {
             </p>
           </div>
 
-          {/* Navigation */}
+          
           <div className="flex justify-between mt-6">
             <Button
               onClick={handlePrev}
