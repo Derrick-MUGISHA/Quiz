@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import FloatingUserButton from "@/components/FloatingUserButton";
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import QueryProvider from "@/components/query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,7 +68,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/web-app-manifest-512x192.png",
+    shortcut: "/favicon.svg",
     apple: "/apple-touch-icon.png",
   },
 };
@@ -83,12 +84,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
+          <QueryProvider>
           {children}
           <Analytics />
           <SpeedInsights />
           <FloatingUserButton />
           <Cookies />
           <Toaster position="top-right" />
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
