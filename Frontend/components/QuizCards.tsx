@@ -43,7 +43,14 @@ const fetchQuizzes = useCallback(async () => {
       throw new Error(error?.message || "Failed to fetch quizzes.");
     }
 
-    setQuizzes(data);
+    const publishedQuizzes = data
+      .map((quiz: Quiz) => ({
+        ...quiz,
+        questions: quiz.questions.filter((q: Question) => q.status === "published"),
+      }))
+      .filter((quiz: Quiz) => quiz.questions.length > 0);
+
+    setQuizzes(publishedQuizzes);
   } catch (err: unknown) {
     console.error("Error fetching quizzes:", err);
     setError(
@@ -56,6 +63,7 @@ const fetchQuizzes = useCallback(async () => {
     setLoading(false);
   }
 }, []);
+
 
 
   useEffect(() => {
