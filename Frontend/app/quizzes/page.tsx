@@ -1,6 +1,5 @@
-import dynamic from "next/dynamic";
-const QuizCards = dynamic(() => import("@/components/QuizCards"), { ssr: false });
+import QuizCardsClientWrapper from "@/components/QuizCardsClientWrapper";
 
 export default function QuizzesPage() {
-  return <QuizCards />;
+  return <QuizCardsClientWrapper />;
 }
