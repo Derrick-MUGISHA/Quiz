@@ -32,12 +32,31 @@ export default function QuizCards({
   const [error, setError] = useState<string | null>(initialError);
   const [loadingQuizId, setLoadingQuizId] = useState<string | null>(null);
 
-  const fetchQuizzes = useCallback(async () => {
-    setLoading(true);
-    const { data } = await getQuizzes();
-    setQuizzes(data || []);
+const fetchQuizzes = useCallback(async () => {
+  setLoading(true);
+  setError(null); 
+
+  try {
+    const { data, error } = await getQuizzes();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Failed to fetch quizzes.");
+    }
+
+    setQuizzes(data);
+  } catch (err: unknown) {
+    console.error("Error fetching quizzes:", err);
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Something went wrong while fetching quizzes."
+    );
+    setQuizzes([]); 
+  } finally {
     setLoading(false);
-  }, []);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchQuizzes();
