@@ -15,7 +15,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
 
-    if (origin === "https://quiz-five-rho-90.vercel.app") return callback(null, true);
+    if (origin === "https://devqu1z.vercel.app/") return callback(null, true);
 
     if (/^https:\/\/quiz-[a-z0-9-]+\.vercel\.app$/.test(origin)) return callback(null, true);
 
