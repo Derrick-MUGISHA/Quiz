@@ -1,13 +1,6 @@
-import { getQuizzes } from "@/api/getQuiz";
-import QuizCards from "@/components/QuizCards";
+import dynamic from "next/dynamic";
+const QuizCards = dynamic(() => import("@/components/QuizCards"), { ssr: false });
 
-export default async function QuizzesPage() {
-  const { data, error } = await getQuizzes();
-
-  return (
-    <QuizCards
-      initialQuizzes={data || []}
-      initialError={error?.message || null}
-    />
-  );
+export default function QuizzesPage() {
+  return <QuizCards />;
 }
