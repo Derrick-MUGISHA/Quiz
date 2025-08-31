@@ -285,6 +285,7 @@ export function BackgroundPaths({
             <div className="absolute inset-0">
                 <FloatingPaths position={1} />
                 <FloatingPaths position={-1} />
+                <FloatingPaths position={2} />
             </div>
             <ScrollingLogos />
 
