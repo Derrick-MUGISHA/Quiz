@@ -61,7 +61,7 @@ export default function ConsentModal() {
         {/* Close Button */}
         <Button
           onClick={handleClose}
-          className="absolute top-3 right-3 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-shadow shadow-sm"
+          className="absolute top-3 right-3 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-shadow shadow-sm cursor-pointer"
         >
           <X className="h-5 w-5 text-gray-600" />
         </Button>
@@ -69,7 +69,7 @@ export default function ConsentModal() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome!</CardTitle>
           <CardDescription className="text-gray-600 mt-1">
-            Please accept so that your scores are saved and track your activity 
+            Please accept and Login so that your scores are saved and track your activity 
           </CardDescription>
         </CardHeader>
 
@@ -78,13 +78,13 @@ export default function ConsentModal() {
             onClick={handleAccept}
             className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-2xl cursor-pointer"
           >
-            Accept
+            Login
           </Button>
           <Button
             onClick={handleReject}
             className="flex-1 bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-2xl cursor-pointer"
           >
-            Reject
+            Pass On
           </Button>
         </CardContent>
       </Card>
