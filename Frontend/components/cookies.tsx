@@ -10,50 +10,44 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import Cookies from "js-cookie";
 
-
-const setCookie = (name: string, value: string, days: number) => {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(
-    value
-  )};expires=${date.toUTCString()};path=/`;
-};
-
-const getCookie = (name: string): string | null => {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(";");
-  for (let c of ca) {
-    c = c.trim();
-    if (c.indexOf(nameEQ) === 0)
-      return decodeURIComponent(c.substring(nameEQ.length));
-  }
-  return null;
+const setConsentCookie = (value: "accepted" | "rejected") => {
+  Cookies.set("userConsent", value, { expires: 365, sameSite: "lax" });
 };
 
 export default function ConsentModal() {
+  const { user, loading } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const consent = getCookie("userConsent");
+    const consent = Cookies.get("userConsent");
     if (!consent) setShowModal(true);
   }, []);
 
   const handleClose = () => setShowModal(false);
 
   const handleAccept = () => {
-    setCookie("userConsent", "accepted", 365);
+    setConsentCookie("accepted");
     setShowModal(false);
-    window.location.href = "/login";
+
+    if (user) {
+     
+      window.location.href = "/"; 
+    } else {
+      
+      window.location.href = "/login";
+    }
   };
 
   const handleReject = () => {
-    setCookie("userConsent", "rejected", 365);
+    setConsentCookie("rejected");
     setShowModal(false);
     window.location.href = "/";
   };
 
-  if (!showModal) return null;
+  if (!showModal || loading) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 px-4">
@@ -69,7 +63,9 @@ export default function ConsentModal() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome!</CardTitle>
           <CardDescription className="text-gray-600 mt-1">
-            Please accept and Login so that your scores are saved and track your activity 
+            {user
+              ? "Thanks for logging in! Accept to track your progress."
+              : "Please accept and Login so your scores are saved."}
           </CardDescription>
         </CardHeader>
 
@@ -78,14 +74,17 @@ export default function ConsentModal() {
             onClick={handleAccept}
             className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-2xl cursor-pointer"
           >
-            Login
+            {user ? "Accept" : "Login"}
           </Button>
-          <Button
-            onClick={handleReject}
-            className="flex-1 bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-2xl cursor-pointer"
-          >
-            Pass On
-          </Button>
+
+          
+            <Button
+              onClick={handleReject}
+              className="flex-1 bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-2xl cursor-pointer"
+            >
+              Pass On
+            </Button>
+        
         </CardContent>
       </Card>
     </div>

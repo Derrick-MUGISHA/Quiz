@@ -15,7 +15,7 @@ export default function QuizListPage() {
       >
         <DemoBackgroundPaths />
       </motion.section>
-      <main className="container max-w-12xl mx-auto px-12 flex flex-col justify-center mt-6">
+      <main className="container max-w-18xl mx-auto px-8 flex flex-col justify-center mt-6">
         <QuizCards />
       </main>
     </div>
