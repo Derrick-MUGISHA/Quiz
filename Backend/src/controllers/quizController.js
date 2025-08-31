@@ -34,13 +34,13 @@ exports.getQuizById = async (req, res, next) => {
 
 exports.submitQuiz = async (req, res, next) => {
   try {
-    const { answers, userId, timeTaken } = req.body;
-    
+    const { answers, userId, timeTaken, questionIds } = req.body;
+
     // Validate required fields
     if (!answers || !userId) {
       return res.status(400).json({ message: "Missing required fields: answers and userId" });
     }
-    
+
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
@@ -50,14 +50,17 @@ exports.submitQuiz = async (req, res, next) => {
     let score = 0;
     let correctAnswers = 0;
 
-    const answeredQuestions = quiz.questions.map((q) => {
+    const quizQuestions = quiz.questions.filter((q) =>
+      questionIds.includes(q._id.toString())
+    );
+
+    const answeredQuestions = quizQuestions.map((q) => {
       const selectedAnswer = answers[q._id];
       const isCorrect = selectedAnswer === q.correctAnswer;
       if (isCorrect) {
         score += q.score || 1;
         correctAnswers++;
       }
-
       return {
         questionId: q._id,
         questionTitle: q.title,
@@ -69,7 +72,10 @@ exports.submitQuiz = async (req, res, next) => {
     });
 
     // Calculate percentage score
-    const percentageScore = Math.round((correctAnswers / quiz.questions.length) * 100);
+    const percentageScore = Math.round(
+      (correctAnswers / quizQuestions.length) * 100
+    );
+
 
     // Create a unique attempt ID
     const attemptId = uuidv4();

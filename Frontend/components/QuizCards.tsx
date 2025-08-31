@@ -263,7 +263,7 @@ const fetchQuizzes = useCallback(async () => {
   };
 
   return (
-    <main className="container max-w-8xl mx-auto px-4 sm:px-6 md:px-12 flex flex-col justify-center mb-8">
+    <main className="container max-w-14xl mx-auto px-4 sm:px-2 md:px-6 flex flex-col justify-center mb-8">
       {/* Error Section */}
       {error && !loading && (
         <div className="flex flex-col justify-center items-center text-center py-16">
