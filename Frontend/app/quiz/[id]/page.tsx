@@ -34,23 +34,21 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  if (authLoading) return;
+  useEffect(() => {
+    if (authLoading) return;
 
-  if (!user) {
-    toast.error("Please log in or create an account to start the quiz.");
-    router.push("/login");
-    return;
-  }
+    if (!user) {
+      toast.error("Please log in or create an account to start the quiz.");
+      router.push("/login");
+      return;
+    }
 
-  if (user.role === "teacher") {
-    toast.error("Teachers are not allowed to take quizzes.");
-    router.push("/teachers-dashboard");
-    return;
-  }
-
-}, [user, authLoading, router]);
-
+    if (user.role === "teacher") {
+      toast.error("Teachers are not allowed to take quizzes.");
+      router.push("/teachers-dashboard");
+      return;
+    }
+  }, [user, authLoading, router]);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -124,6 +122,7 @@ useEffect(() => {
       const submitData = {
         userId: userId,
         answers: selectedAnswers,
+        questionIds: quiz.questions.map((q) => q._id),
         timeTaken: 600 - timeRemaining,
       };
 

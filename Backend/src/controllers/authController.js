@@ -13,7 +13,6 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validation
     if (!name || name.length < 2) return res.status(400).json({ error: "Name must be at least 2 characters" });
     if (!email || !validator.isEmail(email)) return res.status(400).json({ error: "Invalid email address" });
     if (!password || password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters" });
@@ -22,18 +21,14 @@ exports.register = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Check existing user
     const existing = await User.findOne({ email: normalizedEmail });
     if (existing) return res.status(400).json({ error: "Email already exists" });
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const tokenExpiry = Date.now() + VERIFICATION_TOKEN_EXPIRY;
 
-    // Save user
     const user = await User.create({
       name,
       email: normalizedEmail,
@@ -101,7 +96,7 @@ exports.login = async (req, res) => {
 
     if (!user.isEmailVerified) return res.status(403).json({ error: "Please verify your email first" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
 
     res.cookie("teacherToken", token, {
       httpOnly: true,
