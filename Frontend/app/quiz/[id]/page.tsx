@@ -34,19 +34,19 @@ export default function QuizPage() {
   const [showHint, setShowHint] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   if (authLoading) return;
+  useEffect(() => {
+    if (authLoading) return;
 
-  //   if (!user) {
-  //     router.push("/login");
-  //     return;
-  //   }
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
-  //   if (user.role === "teacher") {
-  //     router.push("/teachers-dashboard");
-  //     return;
-  //   }
-  // }, [user, authLoading, router]);
+    if (user.role === "teacher") {
+      router.push("/teachers-dashboard");
+      return;
+    }
+  }, [user, authLoading, router]);
 
   // Shuffle helper
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -61,6 +61,7 @@ export default function QuizPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       if (!quizId) return router.push("/");
+
       try {
         setLoading(true);
         const { data } = await axios.get(`${API_BASE_URL}/quizzes/${quizId}`);
@@ -76,87 +77,84 @@ export default function QuizPage() {
       }
     };
 
-    if (user && user.role === "student") {
+    // Only fetch if user is a student and not loading auth state
+    if (!authLoading && user && user.role === "student") {
       fetchQuiz();
     }
-  }, [quizId, router, user]);
+  }, [quizId, router, user, authLoading]);
 
- 
+  const handleSubmit = useCallback(
+    async (_timeUp = false) => {
+      if (!quiz || !user) {
+        toast.error("Missing quiz or user data");
+        return;
+      }
 
-
-const handleSubmit = useCallback(
-  async (_timeUp = false) => {
-    if (!quiz || !user) {
-      toast.error("Missing quiz or user data");
-      return;
-    }
-
-
-    const getUserId = (userObj: UserType) => {
-      return userObj._id || userObj.id || userObj.userId || userObj.user_id;
-    };
-
-    const userId = getUserId(user);
-    
-    if (!userId) {
-      toast.error("User authentication issue. Please log in again.");
-      router.push("/login");
-      return;
-    }
-
-    const answeredQuestions = quiz.questions.map((q) => {
-      const selectedAnswer = selectedAnswers[q._id]; 
-      const isCorrect = selectedAnswer === q.correctAnswer;
-      return {
-        questionId: q._id,
-        questionTitle: q.title,
-        selectedAnswer,
-        isCorrect,
-        score: isCorrect ? q.score || 1 : 0,
-        timeTaken: 0,
+      const getUserId = (userObj: UserType) => {
+        return userObj._id || userObj.id || userObj.userId || userObj.user_id;
       };
-    });
 
-    const correct = answeredQuestions.filter((q) => q.isCorrect).length;
-    const score = Math.round((correct / quiz.questions.length) * 100);
+      const userId = getUserId(user);
 
-    const submitData = {
-      userId: userId,
-      answers: selectedAnswers,
-      timeTaken: 600 - timeRemaining,
-    };
+      if (!userId) {
+        toast.error("User authentication issue. Please log in again.");
+        router.push("/login");
+        return;
+      }
 
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
-        submitData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const answeredQuestions = quiz.questions.map((q) => {
+        const selectedAnswer = selectedAnswers[q._id];
+        const isCorrect = selectedAnswer === q.correctAnswer;
+        return {
+          questionId: q._id,
+          questionTitle: q.title,
+          selectedAnswer,
+          isCorrect,
+          score: isCorrect ? q.score || 1 : 0,
+          timeTaken: 0,
+        };
+      });
+
+      const correct = answeredQuestions.filter((q) => q.isCorrect).length;
+      const score = Math.round((correct / quiz.questions.length) * 100);
+
+      const submitData = {
+        userId: userId,
+        answers: selectedAnswers,
+        timeTaken: 600 - timeRemaining,
+      };
+
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/quizzes/${quiz._id}/submit`,
+          submitData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        toast.success(`Quiz completed! You scored ${score}%`);
+
+        router.push(
+          `/quiz/${quiz._id}/results?attempt=${response.data.result._id}`
+        );
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          const errorMessage =
+            err.response?.data?.message || "Failed to save results";
+          toast.error(`${errorMessage}. Returning to start page...`);
+        } else if (err instanceof Error) {
+          toast.error(`${err.message}. Returning to start page...`);
+        } else {
+          toast.error("An unknown error occurred. Returning to start page...");
         }
-      );
-
-      toast.success(`Quiz completed! You scored ${score}%`);
-
-      router.push(
-        `/quiz/${quiz._id}/results?attempt=${response.data.result._id}`
-      );
-    } catch (err: unknown) {
-  if (axios.isAxiosError(err)) {
-    const errorMessage = err.response?.data?.message || "Failed to save results";
-    toast.error(`${errorMessage}. Returning to start page...`);
-  } else if (err instanceof Error) {
-    toast.error(`${err.message}. Returning to start page...`);
-  } else {
-    toast.error("An unknown error occurred. Returning to start page...");
-  }
-  router.push("/");
-}
-
-  },
-  [quiz, selectedAnswers, router, timeRemaining, user]
-);
+        router.push("/");
+      }
+    },
+    [quiz, selectedAnswers, router, timeRemaining, user]
+  );
 
   useEffect(() => {
     if (!quiz) return;
@@ -231,7 +229,7 @@ const handleSubmit = useCallback(
             <ChevronLeft className="w-6 h-6 mr-2" /> Back
           </Button>
           <h1 className="text-3xl md:text-4xl font-bold">
-            {quiz.title} 
+            {quiz.title}
             <span className="text-lg text-gray-500">– {user?.name}</span>
           </h1>
           <div
@@ -244,7 +242,6 @@ const handleSubmit = useCallback(
           </div>
         </header>
 
-        
         <div className="flex flex-col md:flex-row gap-6 border border-amber-200 rounded-lg shadow-lg bg-white p-6 md:p-12 mt-6 md:mt-24">
           <div className="flex-1">
             <div className="mb-4 flex flex-col">

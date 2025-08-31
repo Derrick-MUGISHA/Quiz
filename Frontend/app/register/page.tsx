@@ -12,6 +12,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import { motion } from "framer-motion";
+import * as React from "react";
 
 const schema = z
   .object({
@@ -27,6 +29,90 @@ const schema = z
 
 type RegisterFormData = z.infer<typeof schema>;
 
+function FloatingPaths({ position }: { position: number }) {
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
+  const [windowWidth, setWindowWidth] = React.useState(0);
+  // const position = 1;
+
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  React.useEffect(() => {
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+  const mouseInfluence =
+    windowWidth > 0 ? (mousePosition.x / windowWidth - 0.5) * 100 : 0;
+
+  type Path = {
+    id: number;
+    d: string;
+    width: number;
+  };
+
+  const paths: Path[] = Array.from({ length: 20 }, (_, i) => {
+    return {
+      id: i,
+      d: `M-${380 - i * 8 * position + mouseInfluence} -${189 + i * 8}
+          C-${380 - i * 8 * position + mouseInfluence} -${189 + i * 8}
+           -${312 - i * 8 * position + mouseInfluence * 0.5} ${216 - i * 8}
+           ${152 - i * 8 * position + mouseInfluence * 0.3} ${343 - i * 8}
+          C${616 - i * 8 * position + mouseInfluence * 0.2} ${470 - i * 8}
+           ${684 - i * 8 * position + mouseInfluence * 0.1} ${875 - i * 8}
+           ${684 - i * 8 * position + mouseInfluence * 0.1} ${875 - i * 8}`,
+      width: 0.8 + i * 0.05,
+    };
+  });
+
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      <svg
+        className="w-full h-full text-green-400/20 dark:text-cyan-400/20"
+        viewBox="0 0 696 316"
+        fill="none"
+      >
+        <title>Interactive Code Paths</title>
+        {paths.map((path) => (
+          <motion.path
+            key={path.id}
+            d={path.d}
+            stroke="currentColor"
+            strokeWidth={path.width}
+            strokeOpacity={0.2 + path.id * 0.04}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 1, 0.7],
+              opacity: [0.2, 0.8, 0.3],
+            }}
+            transition={{
+              duration: 1 + path.id * 4,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: path.id * 0.5,
+            }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +153,12 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4">
-      <div className="w-full max-w-md p-10 bg-white rounded-2xl shadow-xl border border-gray-200">
+      <div className="absolute inset-0">
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+        <FloatingPaths position={2} />
+      </div>
+      <div className="w-full max-w-md p-10 bg-white rounded-2xl shadow-xl border border-green-200 z-20">
         <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
           Create Your free account
         </h2>

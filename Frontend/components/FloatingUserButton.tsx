@@ -70,7 +70,7 @@ export default function FloatingUserButton() {
       {/* Floating Button */}
       <Button
         onClick={() => (isNavigating ? handleClick("home") : setOpen(!open))}
-        className={`w-16 h-16 rounded-full ${buttonStyle} text-white flex flex-col items-center justify-center shadow-xl transition-all duration-300 transform hover:scale-110`}
+        className={`w-16 h-16 rounded-full ${buttonStyle} text-white flex flex-col items-center justify-center shadow-xl transition-all duration-300 transform hover:scale-110 cursor-pointer`}
       >
         {isNavigating ? (
           <>
@@ -147,14 +147,14 @@ export default function FloatingUserButton() {
               <>
                 <button
                   onClick={() => router.push("/login")}
-                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-blue-100 transition-colors cursor-pointer"
                 >
                   <LogInIcon className="w-5 h-5 text-blue-500" />
                   <span className="font-medium text-blue-500">Login</span>
                 </button>
                 <button
                   onClick={() => router.push("/register")}
-                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-green-200 transition-colors cursor-pointer"
                 >
                   <UserCog className="w-5 h-5 text-green-600" />
                   <span className="font-medium text-green-600">Register</span>
