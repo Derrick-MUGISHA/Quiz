@@ -208,7 +208,7 @@ export default function QuizPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
           <div className="w-16 h-16 border-4 border-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-lg font-medium text-gray-700">Fetching quiz…</p>
+          <p className="text-lg font-medium text-gray-700"> Fetching quiz…</p>
           <p className="text-sm text-gray-500">
             Please wait while we prepare your questions ✨
           </p>
@@ -232,7 +232,7 @@ export default function QuizPage() {
           </Button>
           <h1 className="text-3xl md:text-4xl font-bold">
             {quiz.title}
-            <span className="text-lg text-gray-500">– {user?.name}</span>
+            <span className="text-lg text-gray-500">-done by {user?.name}</span>
           </h1>
           <div
             className={`flex items-center gap-2 text-2xl md:text-3xl font-semibold ${
