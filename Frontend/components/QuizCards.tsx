@@ -210,7 +210,7 @@ const fetchQuizzes = useCallback(async () => {
   const handleStartQuiz = async (quiz: Quiz) => {
     setLoadingQuizId(quiz._id);
 
-    toast(`Starting quiz: ${quiz.title}`);
+    // toast(`Starting quiz: ${quiz.title}`);
 
     try {
       const publishedQuestions = quiz.questions.filter(
